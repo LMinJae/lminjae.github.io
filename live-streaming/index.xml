@@ -6,7 +6,20 @@
     <description>Recent content in Live-streamings on Min-Jae Lee</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.mjlee.ga/live-streaming/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 14 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.mjlee.ga/live-streaming/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Impl. live streaming system: Rough design</title>
+      <link>https://blog.mjlee.ga/live-streaming/rough-design/</link>
+      <pubDate>Mon, 14 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.mjlee.ga/live-streaming/rough-design/</guid>
+      <description>Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
+ mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
+Whole system require Low-Latency, High-Available and Low-Cost.
+So, detail system will be like this.
+flowchart LR p(Streamer) subgraph .</description>
+    </item>
+    
     <item>
       <title>Impl. live streaming system: Intro</title>
       <link>https://blog.mjlee.ga/live-streaming/intro/</link>
