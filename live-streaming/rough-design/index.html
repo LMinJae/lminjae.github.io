@@ -14,14 +14,14 @@
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Impl. live streaming system: Rough design"/>
 <meta name="twitter:description" content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
- mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
+mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
 Whole system require Low-Latency, High-Available and Low-Cost.
 So, detail system will be like this.
 flowchart LR p(Streamer) subgraph ."/>
 
     <meta property="og:title" content="Impl. live streaming system: Rough design" />
 <meta property="og:description" content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
- mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
+mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
 Whole system require Low-Latency, High-Available and Low-Cost.
 So, detail system will be like this.
 flowchart LR p(Streamer) subgraph ." />
@@ -85,12 +85,11 @@ flowchart LR p(Streamer) subgraph ." />
       <h1 id="introduction">Introduction</h1>
 <p>In previous post, I select <code>RTMP</code> and <code>HLS with CMAF</code> as a protocol between service and end-users(streamers and viewers).</p>
 
-    
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true})</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true})</script>
 
 
-<div class="mermaid" align="center">
+<div class="mermaid" style="background: snow;" align="center">
 flowchart LR
 	p(Streamer)
   subgraph Service Provider
@@ -110,7 +109,7 @@ flowchart LR
 <p>So, detail system will be like this.</p>
 
 
-<div class="mermaid" align="center">
+<div class="mermaid" style="background: snow;" align="center">
 flowchart LR
 	p(Streamer)
   subgraph .
