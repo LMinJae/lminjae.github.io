@@ -1,141 +1,106 @@
-<!doctype html>
-<html lang="en-us">
-  <head>
-    <title>Impl. live streaming system: Rough design // Min-Jae Lee</title>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.92.1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="Min-Jae Lee" />
-    <meta name="description" content="" />
-    <link rel="stylesheet" href="https://blog.mjlee.ga/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
-
-    
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Impl. live streaming system: Rough design"/>
-<meta name="twitter:description" content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
+<!doctype html><html lang=en-us>
+<head>
+<title>Impl. live streaming system: Rough design // Min-Jae Lee</title>
+<link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.92.1">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Impl. live streaming system: Rough design">
+<meta name=twitter:description content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
 mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
 Whole system require Low-Latency, High-Available and Low-Cost.
 So, detail system will be like this.
-flowchart LR p(Streamer) subgraph ."/>
-
-    <meta property="og:title" content="Impl. live streaming system: Rough design" />
+flowchart LR p(Streamer) subgraph .">
+<meta property="og:title" content="Impl. live streaming system: Rough design">
 <meta property="og:description" content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
 mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
 Whole system require Low-Latency, High-Available and Low-Cost.
 So, detail system will be like this.
-flowchart LR p(Streamer) subgraph ." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/rough-design/" /><meta property="article:section" content="live-streaming" />
-<meta property="article:published_time" content="2022-02-14T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-02-14T00:00:00+00:00" />
-
-
-
-  </head>
-  <body>
-    <header class="app-header">
-      <a href="https://blog.mjlee.ga/"><img class="app-header-avatar" src="/avatar.jpg" alt="Min-Jae Lee" /></a>
-      <h1>Min-Jae Lee</h1>
-      <nav class="app-header-menu">
-          <a class="app-header-menu-item" href="/">Home</a>
-      </nav>
-      <p>Software Engineer</p>
-      <div class="app-header-social">
-        
-          <a href="https://github.com/lminjae" target="_blank" rel="noreferrer noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>My Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-          </a>
-        
-          <a href="https://linkedin.com/in/lminjae" target="_blank" rel="noreferrer noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>My LinkedIn</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-          </a>
-        
-      </div>
-    </header>
-    <main class="app-container">
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class ="post-title">Impl. live streaming system: Rough design</h1>
-      <div class="post-meta">
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-          Feb 14, 2022
-        </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-          4 min read
-        </div>
-      </div>
-    </header>
-    <div class="post-content">
-      <h1 id="introduction">Introduction</h1>
-<p>In previous post, I select <code>RTMP</code> and <code>HLS with CMAF</code> as a protocol between service and end-users(streamers and viewers).</p>
-
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true})</script>
-
-
-<div class="mermaid" style="background: snow;" align="center">
-flowchart LR
-	p(Streamer)
-  subgraph Service Provider
-		i(Ingest)
-		t(Transcoder)
-		e(Edge)
-  end
-	s(Viewer)
-	p -->|RTMP| i
-	i --> t
-	t --> e
-	e -->|HLS\CMAF| s
+flowchart LR p(Streamer) subgraph .">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/rough-design/"><meta property="article:section" content="live-streaming">
+<meta property="article:published_time" content="2022-02-14T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-02-14T00:00:00+00:00">
+</head>
+<body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1>
+<nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+</nav>
+<p>Software Engineer</p>
+<div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
 </div>
-
+</header>
+<main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Impl. live streaming system: Rough design</h1>
+<div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Feb 14, 2022
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+4 min read
+</div>
+</div>
+</header>
+<div class=post-content>
+<h1 id=introduction>Introduction</h1>
+<p>In previous post, I select <code>RTMP</code> and <code>HLS with CMAF</code> as a protocol between service and end-users(streamers and viewers).</p>
+<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:!0})</script>
+<div class=mermaid style=background:snow align=center>
+flowchart LR
+p(Streamer)
+subgraph Service Provider
+i(Ingest)
+t(Transcoder)
+e(Edge)
+end
+s(Viewer)
+p -->|RTMP| i
+i --> t
+t --> e
+e -->|HLS\CMAF| s
+</div>
 <p>Each layers(Ingest, Transcoder, Edge) have different requirements.</p>
 <p>Whole system require Low-Latency, High-Available and Low-Cost.</p>
 <p>So, detail system will be like this.</p>
-
-
-<div class="mermaid" style="background: snow;" align="center">
+<div class=mermaid style=background:snow align=center>
 flowchart LR
-	p(Streamer)
-  subgraph .
-  subgraph Ingest Pool
-		i(Ingest)
-  end
-	tq(Transcoder queue)
-  subgraph Transcoder Pool
-		t(Transcoder)
-  end
-  subgraph Edge
-		e(Edge server)
-		cdn(CDN)
-  end
-  end
-	s(Viewer)
-	p -->|RTMP| i
-	i --> tq
-	tq --> t
-	t --> e
-	e --> cdn
-	cdn -->|HLS\CMAF| s
+p(Streamer)
+subgraph .
+subgraph Ingest Pool
+i(Ingest)
+end
+tq(Transcoder queue)
+subgraph Transcoder Pool
+t(Transcoder)
+end
+subgraph Edge
+e(Edge server)
+cdn(CDN)
+end
+end
+s(Viewer)
+p -->|RTMP| i
+i --> tq
+tq --> t
+t --> e
+e --> cdn
+cdn -->|HLS\CMAF| s
 </div>
-
-<h1 id="more-detail-about-systems">More detail about Systems</h1>
-<h2 id="ingest">Ingest</h2>
+<h1 id=more-detail-about-systems>More detail about Systems</h1>
+<h2 id=ingest>Ingest</h2>
 <ul>
 <li>Primary objective is keep hold stream connection and passing into system immidiatly.</li>
 <li>Only one stream per on stream-key between multiple instances</li>
@@ -147,7 +112,7 @@ flowchart LR
 </li>
 <li>Stream will be passing transcoder queue</li>
 </ul>
-<h2 id="transcoder">Transcoder</h2>
+<h2 id=transcoder>Transcoder</h2>
 <ul>
 <li>Require computing power.</li>
 <li>This layer is due to Adaptive Streaming(such as DASH, HLS).</li>
@@ -165,7 +130,7 @@ Gear 4 - 768x432 @ 1.1 Mbps
 Gear 3 - 640x360 @ 730 kbps
 Gear 2 - 480x270 @ 365 kbps
 Gear 1 - 416x234 @ 145 kbps
-<a href="https://developer.apple.com/streaming/examples/">Apple&gt;Developer&gt;HTTP Live Streaming&gt;Examples</a></p>
+<a href=https://developer.apple.com/streaming/examples/>Apple>Developer>HTTP Live Streaming>Examples</a></p>
 </blockquote>
 <ul>
 <li>Most common, easist way is just using ffmpeg with input RTMP stream and output HLS.
@@ -174,18 +139,18 @@ Gear 1 - 416x234 @ 145 kbps
 </ul>
 </li>
 </ul>
-<h2 id="edge-server">Edge server</h2>
+<h2 id=edge-server>Edge server</h2>
 <ul>
 <li>Generate playlist</li>
 <li>Primary topic is CDN caching related and low cost operation.</li>
 </ul>
-<h1 id="choose-development-stack">Choose development stack</h1>
+<h1 id=choose-development-stack>Choose development stack</h1>
 <ul>
 <li>DRY(Don&rsquo;t Repeat Yourself), KISS(Keep It Simple, Stupid), YAGNI(You Ain&rsquo;t Gonna Need It) is main objective.</li>
 </ul>
 <p>There is so many programming language is exist, my selection criteria is simple. well-kown, modern, and safety.
 my country&rsquo;s common job requirements, <code>Golang</code> is most common in streaming related industry, <code>Kotlin</code> with <code>SpringBoot</code> is hot on mobile app&rsquo;s backend stack.</p>
-<p>But, i select  <code>Rust</code> and <code>Golang</code> due to followin reason.</p>
+<p>But, i select <code>Rust</code> and <code>Golang</code> due to followin reason.</p>
 <ul>
 <li>
 <p>For binary protocol related(Ingest, Transcoder), low-latency and reusability are most valuable.</p>
@@ -228,7 +193,7 @@ my country&rsquo;s common job requirements, <code>Golang</code> is most common i
 </ul>
 </li>
 </ul>
-<h1 id="results">Results</h1>
+<h1 id=results>Results</h1>
 <p>I will implement below step by step</p>
 <ul>
 <li>RTMP
@@ -269,39 +234,21 @@ my country&rsquo;s common job requirements, <code>Golang</code> is most common i
 </ul>
 </li>
 </ul>
-<h1 id="references">References</h1>
+<h1 id=references>References</h1>
 <ul>
-<li><a href="https://blog.twitch.tv/2017/10/10/live-video-transmuxing-transcoding-f-fmpeg-vs-twitch-transcoder-part-i-489c1c125f28/">Live Video Transmuxing/Transcoding: FFmpeg vs TwitchTranscoder, Part I | Twitch Blog</a></li>
-<li><a href="https://developer.apple.com/documentation/http_live_streaming">HTTP Live Streaming | Apple Developer</a></li>
-<li><a href="https://developer.apple.com/documentation/http_live_streaming/enabling_low-latency_hls">Enabling Low-Latency HLS | Apple Developer</a></li>
-<li><a href="https://developer.apple.com/documentation/http_live_streaming/about_the_common_media_application_format_with_http_live_streaming">About the Common Media Application Format with HTTP Live Streaming | Apple Developer</a></li>
+<li><a href=https://blog.twitch.tv/2017/10/10/live-video-transmuxing-transcoding-f-fmpeg-vs-twitch-transcoder-part-i-489c1c125f28/>Live Video Transmuxing/Transcoding: FFmpeg vs TwitchTranscoder, Part I | Twitch Blog</a></li>
+<li><a href=https://developer.apple.com/documentation/http_live_streaming>HTTP Live Streaming | Apple Developer</a></li>
+<li><a href=https://developer.apple.com/documentation/http_live_streaming/enabling_low-latency_hls>Enabling Low-Latency HLS | Apple Developer</a></li>
+<li><a href=https://developer.apple.com/documentation/http_live_streaming/about_the_common_media_application_format_with_http_live_streaming>About the Common Media Application Format with HTTP Live Streaming | Apple Developer</a></li>
 </ul>
-
-    </div>
-    <div class="post-footer">
-      <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "mjlee" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    </div>
-  </article>
-
-    </main>
-  </body>
+</div>
+<div class=post-footer>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//mjlee.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+</article>
+</main>
+</body>
 </html>

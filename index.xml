@@ -1,46 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Min-Jae Lee</title>
-    <link>https://blog.mjlee.ga/</link>
-    <description>Recent content on Min-Jae Lee</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Wed, 16 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.mjlee.ga/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Impl. live streaming system - RTMP: Introduction &amp; Basic Handshake</title>
-      <link>https://blog.mjlee.ga/live-streaming/rtmp/handshake/</link>
-      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.mjlee.ga/live-streaming/rtmp/handshake/</guid>
-      <description>Introduction RTMP Protocol is a set of these three things
- Handshake  Check reliable stream transport   Chunk Stream  Multiplexing Packetizing   Message  Video/Audio RPC    RTMP is message multiplexing protocol, not only media service.
- Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers.</description>
-    </item>
-    
-    <item>
-      <title>Impl. live streaming system: Rough design</title>
-      <link>https://blog.mjlee.ga/live-streaming/rough-design/</link>
-      <pubDate>Mon, 14 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.mjlee.ga/live-streaming/rough-design/</guid>
-      <description>Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
-mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Min-Jae Lee</title><link>https://blog.mjlee.ga/</link><description>Recent content on Min-Jae Lee</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 16 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.mjlee.ga/index.xml" rel="self" type="application/rss+xml"/><item><title>Impl. live streaming system - RTMP: Introduction &amp; Basic Handshake</title><link>https://blog.mjlee.ga/live-streaming/rtmp/handshake/</link><pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate><guid>https://blog.mjlee.ga/live-streaming/rtmp/handshake/</guid><description>Introduction RTMP Protocol is a set of these three things
+Handshake Check reliable stream transport Chunk Stream Multiplexing Packetizing Message Video/Audio RPC RTMP is message multiplexing protocol, not only media service.
+Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers.</description></item><item><title>Impl. live streaming system: Rough design</title><link>https://blog.mjlee.ga/live-streaming/rough-design/</link><pubDate>Mon, 14 Feb 2022 00:00:00 +0000</pubDate><guid>https://blog.mjlee.ga/live-streaming/rough-design/</guid><description>Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
+mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s Each layers(Ingest, Transcoder, Edge) have different requirements.
 Whole system require Low-Latency, High-Available and Low-Cost.
 So, detail system will be like this.
-flowchart LR p(Streamer) subgraph .</description>
-    </item>
-    
-    <item>
-      <title>Impl. live streaming system: Intro</title>
-      <link>https://blog.mjlee.ga/live-streaming/intro/</link>
-      <pubDate>Fri, 11 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.mjlee.ga/live-streaming/intro/</guid>
-      <description>Introduction I choose live streaming as the first project for posting. because it can be expanded widely in these days and future.
+flowchart LR p(Streamer) subgraph .</description></item><item><title>Impl. live streaming system: Intro</title><link>https://blog.mjlee.ga/live-streaming/intro/</link><pubDate>Fri, 11 Feb 2022 00:00:00 +0000</pubDate><guid>https://blog.mjlee.ga/live-streaming/intro/</guid><description>Introduction I choose live streaming as the first project for posting. because it can be expanded widely in these days and future.
 This article is a decision to select protocols for both streamer and viewer.
- Define live streaming as Real-Time(low-latency) Video/Audio Delivery service. live streaming + low latency bi-directional communication =&amp;gt; game streaming service  In this series, I want to cover the whole flow are explained below from scratch as possible as possible.</description>
-    </item>
-    
-  </channel>
-</rss>
+Define live streaming as Real-Time(low-latency) Video/Audio Delivery service. live streaming + low latency bi-directional communication =&amp;gt; game streaming service In this series, I want to cover the whole flow are explained below from scratch as possible as possible.</description></item></channel></rss>

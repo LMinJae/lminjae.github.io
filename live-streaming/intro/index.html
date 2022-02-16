@@ -1,112 +1,80 @@
-<!doctype html>
-<html lang="en-us">
-  <head>
-    <title>Impl. live streaming system: Intro // Min-Jae Lee</title>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.92.1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="Min-Jae Lee" />
-    <meta name="description" content="" />
-    <link rel="stylesheet" href="https://blog.mjlee.ga/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
-
-    
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Impl. live streaming system: Intro"/>
-<meta name="twitter:description" content="Introduction I choose live streaming as the first project for posting. because it can be expanded widely in these days and future.
+<!doctype html><html lang=en-us>
+<head>
+<title>Impl. live streaming system: Intro // Min-Jae Lee</title>
+<link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.92.1">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Impl. live streaming system: Intro">
+<meta name=twitter:description content="Introduction I choose live streaming as the first project for posting. because it can be expanded widely in these days and future.
 This article is a decision to select protocols for both streamer and viewer.
- Define live streaming as Real-Time(low-latency) Video/Audio Delivery service. live streaming &#43; low latency bi-directional communication =&gt; game streaming service  In this series, I want to cover the whole flow are explained below from scratch as possible as possible."/>
-
-    <meta property="og:title" content="Impl. live streaming system: Intro" />
+ Define live streaming as Real-Time(low-latency) Video/Audio Delivery service. live streaming + low latency bi-directional communication => game streaming service  In this series, I want to cover the whole flow are explained below from scratch as possible as possible.">
+<meta property="og:title" content="Impl. live streaming system: Intro">
 <meta property="og:description" content="Introduction I choose live streaming as the first project for posting. because it can be expanded widely in these days and future.
 This article is a decision to select protocols for both streamer and viewer.
- Define live streaming as Real-Time(low-latency) Video/Audio Delivery service. live streaming &#43; low latency bi-directional communication =&gt; game streaming service  In this series, I want to cover the whole flow are explained below from scratch as possible as possible." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/intro/" /><meta property="article:section" content="live-streaming" />
-<meta property="article:published_time" content="2022-02-11T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-02-11T00:00:00+00:00" />
-
-
-
-  </head>
-  <body>
-    <header class="app-header">
-      <a href="https://blog.mjlee.ga/"><img class="app-header-avatar" src="/avatar.jpg" alt="Min-Jae Lee" /></a>
-      <h1>Min-Jae Lee</h1>
-      <nav class="app-header-menu">
-          <a class="app-header-menu-item" href="/">Home</a>
-      </nav>
-      <p>Software Engineer</p>
-      <div class="app-header-social">
-        
-          <a href="https://github.com/lminjae" target="_blank" rel="noreferrer noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
-  <title>My Github</title>
-  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-</svg>
-          </a>
-        
-          <a href="https://linkedin.com/in/lminjae" target="_blank" rel="noreferrer noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
-  <title>My LinkedIn</title>
-  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
-</svg>
-          </a>
-        
-      </div>
-    </header>
-    <main class="app-container">
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class ="post-title">Impl. live streaming system: Intro</h1>
-      <div class="post-meta">
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-          Feb 11, 2022
-        </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-          5 min read
-        </div>
-      </div>
-    </header>
-    <div class="post-content">
-      <h1 id="introduction">Introduction</h1>
+ Define live streaming as Real-Time(low-latency) Video/Audio Delivery service. live streaming + low latency bi-directional communication => game streaming service  In this series, I want to cover the whole flow are explained below from scratch as possible as possible.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/intro/"><meta property="article:section" content="live-streaming">
+<meta property="article:published_time" content="2022-02-11T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-02-11T00:00:00+00:00">
+</head>
+<body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1>
+<nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+</nav>
+<p>Software Engineer</p>
+<div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
+</div>
+</header>
+<main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Impl. live streaming system: Intro</h1>
+<div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Feb 11, 2022
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+5 min read
+</div>
+</div>
+</header>
+<div class=post-content>
+<h1 id=introduction>Introduction</h1>
 <p>I choose live streaming as the first project for posting. because it can be expanded widely in these days and future.</p>
 <p>This article is a decision to select protocols for both streamer and viewer.</p>
 <ul>
 <li>Define live streaming as Real-Time(low-latency) Video/Audio Delivery service.</li>
-<li>live streaming + low latency bi-directional communication =&gt; game streaming service</li>
+<li>live streaming + low latency bi-directional communication => game streaming service</li>
 </ul>
 <p>In this series, I want to cover the whole flow are explained below from scratch as possible as possible.</p>
-
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true})</script>
-
-
-<div class="mermaid" style="background: snow;" align="center">
+<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:!0})</script>
+<div class=mermaid style=background:snow align=center>
 flowchart LR
-	p(Streamer)
-  subgraph Service Provider
-		i(Ingest)
-		t(Transcoder)
-		e(Edge)
-  end
-	s(Viewer)
-	p --> i
-	i --> t
-	t --> e
-	e --> s
+p(Streamer)
+subgraph Service Provider
+i(Ingest)
+t(Transcoder)
+e(Edge)
+end
+s(Viewer)
+p --> i
+i --> t
+t --> e
+e --> s
 </div>
-
-<h1 id="select-protocols">Select Protocols</h1>
+<h1 id=select-protocols>Select Protocols</h1>
 <p><code>TL;DR</code></p>
 <blockquote>
 <p>I will use <code>RTMP</code> and <code>HLS</code> with <code>CMAF</code></p>
@@ -114,10 +82,10 @@ flowchart LR
 <p>At first, think as a <code>Stakeholder</code>(streamer, viewer, and service provider).</p>
 <p>The important point is easy to use, well documented to using by the streamer. (for well user acquisition)</p>
 <p>Let&rsquo;s think about the end-users first</p>
-<h2 id="service-provider--viewer">Service Provider =&gt; Viewer</h2>
+<h2 id=service-provider--viewer>Service Provider => Viewer</h2>
 <p>The most important points to consider are compatibility, low-latency, and operation cost.</p>
-<p>These days, live video streaming services use <a href="https://www.rfc-editor.org/info/rfc8216"><code>HLS</code></a>, <a href="https://www.iso.org/standard/79329.html"><code>DASH</code></a>, <code>CMAF</code>.</p>
-<p>Some services use <code>WebRTC</code> to provide low-latency. but, it cost more than common CDN-based delivery. (WebRTC based CDN  existx. but I don&rsquo;t know production-ready global service)
+<p>These days, live video streaming services use <a href=https://www.rfc-editor.org/info/rfc8216><code>HLS</code></a>, <a href=https://www.iso.org/standard/79329.html><code>DASH</code></a>, <code>CMAF</code>.</p>
+<p>Some services use <code>WebRTC</code> to provide low-latency. but, it cost more than common CDN-based delivery. (WebRTC based CDN existx. but I don&rsquo;t know production-ready global service)
 And it needs to implement too much than others. (These series implement from scratch, with less dependency)</p>
 <p>Most of the legacy systems in production are based on <code>HLS</code>. due to iOS issues. (<code>HLS</code> is the only format native supported by Safari browser)</p>
 <p><code>CMAF</code> is made by Apple and Microsoft. so <code>CMAF</code> is native support in iOS.</p>
@@ -135,27 +103,27 @@ And it needs to implement too much than others. (These series implement from scr
 <tbody>
 <tr>
 <td>Container</td>
-<td><a href="https://www.iso.org/standard/75928.html"><code>MPEG-2 TS</code></a></td>
+<td><a href=https://www.iso.org/standard/75928.html><code>MPEG-2 TS</code></a></td>
 <td>fMP4</td>
-<td><a href="https://mpeg.chiariglione.org/standards/mpeg-4/iso-base-media-file-format"><code>ISO_BMFF</code></a>(MPEG-4)</td>
+<td><a href=https://mpeg.chiariglione.org/standards/mpeg-4/iso-base-media-file-format><code>ISO_BMFF</code></a>(MPEG-4)</td>
 <td>CMAF(fMP4 compatible)</td>
 </tr>
 </tbody>
 </table>
 <p>My thought about most valuable point of CMAF is requiring less storage cost and computing power on the service provider.</p>
 <ul>
-<li>Support both of <a href="https://www.iso.org/standard/75928.html"><code>MPEG-2 TS</code></a> and <code>fMP4</code> is required 2 times of original media.</li>
-<li>Then, What about only <a href="https://www.iso.org/standard/75928.html"><code>MPEG-2 TS</code></a>?
+<li>Support both of <a href=https://www.iso.org/standard/75928.html><code>MPEG-2 TS</code></a> and <code>fMP4</code> is required 2 times of original media.</li>
+<li>Then, What about only <a href=https://www.iso.org/standard/75928.html><code>MPEG-2 TS</code></a>?
 <ul>
-<li><a href="https://www.iso.org/standard/75928.html"><code>MPEG-2 TS</code></a> packet size is fixed at about 200 bytes. streams will be fragmented with overhead. (it means require more storage)</li>
-<li><a href="https://mpeg.chiariglione.org/standards/mpeg-4/iso-base-media-file-format"><code>ISO_BMFF</code></a> is variable, header has a length value, so NALU is not fragmented like <a href="https://www.iso.org/standard/75928.html"><code>MPEG-2 TS</code></a>. (I don&rsquo;t read <a href="https://mpeg.chiariglione.org/standards/mpeg-4/iso-base-media-file-format"><code>ISO_BMFF</code></a>&rsquo;s specification, so I&rsquo;m not sure it always not fragmented)</li>
-<li><a href="https://www.slideshare.net/bitmovin/bitmovin-segmentlength-50056628/11">Related slide from BITMOVIN</a></li>
+<li><a href=https://www.iso.org/standard/75928.html><code>MPEG-2 TS</code></a> packet size is fixed at about 200 bytes. streams will be fragmented with overhead. (it means require more storage)</li>
+<li><a href=https://mpeg.chiariglione.org/standards/mpeg-4/iso-base-media-file-format><code>ISO_BMFF</code></a> is variable, header has a length value, so NALU is not fragmented like <a href=https://www.iso.org/standard/75928.html><code>MPEG-2 TS</code></a>. (I don&rsquo;t read <a href=https://mpeg.chiariglione.org/standards/mpeg-4/iso-base-media-file-format><code>ISO_BMFF</code></a>&rsquo;s specification, so I&rsquo;m not sure it always not fragmented)</li>
+<li><a href=https://www.slideshare.net/bitmovin/bitmovin-segmentlength-50056628/11>Related slide from BITMOVIN</a></li>
 </ul>
 </li>
 </ul>
 <p>So, CMAF is best for VOD. due to requiring less storage, computing power, and bandwidth.
 but, We need to check out the streamer side. because this series is about live streaming.</p>
-<h2 id="streamer--service-provider">Streamer =&gt; Service Provider</h2>
+<h2 id=streamer--service-provider>Streamer => Service Provider</h2>
 <p><code>TL;DR</code></p>
 <blockquote>
 <p>Use RTMP</p>
@@ -200,7 +168,7 @@ Widely mentioned in the live-streaming industry is <code>RTMP</code>, <code>WebR
 </table>
 <p>At first, I will drop <code>SRT</code> from the list.</p>
 <ul>
-<li>According to <a href="https://datatracker.ietf.org/doc/html/draft-sharabayko-mops-srt-00"><code>SRT</code> Specification'</a>, there is no way to determine a unique id.</li>
+<li>According to <a href=https://datatracker.ietf.org/doc/html/draft-sharabayko-mops-srt-00><code>SRT</code> Specification'</a>, there is no way to determine a unique id.</li>
 <li>as I understand(read specification partially and searching supported services user guide)
 <ul>
 <li>At handshake, sharing unique SRT Socket ID that determines stream at SRT header parsing.</li>
@@ -239,22 +207,22 @@ Widely mentioned in the live-streaming industry is <code>RTMP</code>, <code>WebR
 </li>
 </ul>
 <p>So, I think <code>RTMP</code> is the best choice.</p>
-<p>Let&rsquo;s check again <code>Service Provider =&gt; Viewer</code> side.</p>
+<p>Let&rsquo;s check again <code>Service Provider => Viewer</code> side.</p>
 <p><code>RTMP</code> uses <code>FLV</code> as a media container. (the specification is the same structure)</p>
 <p>If protocol uses <code>MPEG-2 TS</code> like <code>SRT</code>, then the same container using at <code>HLS</code> is a good choice. due to code reusability.
 Just streaming <code>FLV</code> to the viewer is lower latency. (less overhead)
 But, it is not compatible. for example how to play on iOS Safari?
 And, <code>FLV</code> only supports legacy codecs.</p>
-<h1 id="results">Results</h1>
+<h1 id=results>Results</h1>
 <ul>
 <li>Streamers are using <code>RTMP</code> to publish stream.</li>
 <li>Viewers are receiving <code>HLS</code> with <code>CMAF</code> segments</li>
 </ul>
 <p>So, need to implement <code>RTMP</code>, <code>FLV</code>, <code>ISO_BMFF</code>, <code>CMAF</code>, <code>HLS</code>.</p>
 <p>In the next post, I will minimal rough system design.</p>
-<h1 id="discussion">Discussion</h1>
+<h1 id=discussion>Discussion</h1>
 <ul>
-<li>At <a href="https://www.wowza.com/blog/rtmp-streaming-real-time-messaging-protocol">WOWZA&rsquo;s article</a>, I have some questions
+<li>At <a href=https://www.wowza.com/blog/rtmp-streaming-real-time-messaging-protocol>WOWZA&rsquo;s article</a>, I have some questions
 <ul>
 <li>WebRTC is faster than RTSP/RTP.
 <ul>
@@ -265,11 +233,11 @@ And, <code>FLV</code> only supports legacy codecs.</p>
 </li>
 <li>UDP-based protocols have low latency.
 <ul>
-<li>Then, how about <a href="https://datatracker.ietf.org/doc/html/rfc7016">RTMFP</a>(UDP-based RTMP with Secure)?  Why isn&rsquo;t using in production on these days?</li>
-<li>How aboue <a href="https://w3c.github.io/webtransport/">WebTransport</a>?
+<li>Then, how about <a href=https://datatracker.ietf.org/doc/html/rfc7016>RTMFP</a>(UDP-based RTMP with Secure)? Why isn&rsquo;t using in production on these days?</li>
+<li>How aboue <a href=https://w3c.github.io/webtransport/>WebTransport</a>?
 <ul>
-<li>WebRTC is separated as <a href="https://www.w3.org/TR/webcodecs/">WebCodecs</a> and <a href="https://w3c.github.io/webtransport/">WebTransport</a>(At first, it can be explained as UDP-based WebSocket. but <a href="https://w3c.github.io/p2p-webtransport/">P2P-WebTransport</a> draft is a work in progress)</li>
-<li>So, using <a href="https://w3c.github.io/webtransport/">WebTransport</a> or <a href="https://w3c.github.io/p2p-webtransport/">P2P-WebTransport</a> as transport layer, it can be faster like WebRTC?</li>
+<li>WebRTC is separated as <a href=https://www.w3.org/TR/webcodecs/>WebCodecs</a> and <a href=https://w3c.github.io/webtransport/>WebTransport</a>(At first, it can be explained as UDP-based WebSocket. but <a href=https://w3c.github.io/p2p-webtransport/>P2P-WebTransport</a> draft is a work in progress)</li>
+<li>So, using <a href=https://w3c.github.io/webtransport/>WebTransport</a> or <a href=https://w3c.github.io/p2p-webtransport/>P2P-WebTransport</a> as transport layer, it can be faster like WebRTC?</li>
 </ul>
 </li>
 </ul>
@@ -277,37 +245,19 @@ And, <code>FLV</code> only supports legacy codecs.</p>
 </ul>
 </li>
 </ul>
-<h1 id="references">References</h1>
+<h1 id=references>References</h1>
 <ul>
-<li><a href="https://www.wowza.com/blog/rtmp-streaming-real-time-messaging-protocol">RTMP Streaming: The Real-Time Messaging Protocol Explained - WOWZA media systems</a></li>
-<li><a href="https://restream.io/blog/streaming-protocols/">Video streaming protocols explained: RTMP, WebRTC, FTL, SRT - Restream|Blog</a></li>
+<li><a href=https://www.wowza.com/blog/rtmp-streaming-real-time-messaging-protocol>RTMP Streaming: The Real-Time Messaging Protocol Explained - WOWZA media systems</a></li>
+<li><a href=https://restream.io/blog/streaming-protocols/>Video streaming protocols explained: RTMP, WebRTC, FTL, SRT - Restream|Blog</a></li>
 </ul>
-
-    </div>
-    <div class="post-footer">
-      <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "mjlee" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    </div>
-  </article>
-
-    </main>
-  </body>
+</div>
+<div class=post-footer>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//mjlee.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+</article>
+</main>
+</body>
 </html>
