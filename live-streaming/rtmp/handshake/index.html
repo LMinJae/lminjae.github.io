@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Impl. live streaming system - RTMP: Introduction &amp; Basic Handshake // Min-Jae Lee</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Min-Jae Lee" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://blog.mjlee.ga/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Impl. live streaming system - RTMP: Introduction &amp; Basic Handshake"/>
+<meta name="twitter:description" content="Introduction RTMP Protocol is a set of these three things
+ Handshake  Check reliable stream transport   Chunk Stream  Multiplexing Packetizing   Message  Video/Audio RPC    RTMP is message multiplexing protocol, not only media service.
+ Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers."/>
+
+    <meta property="og:title" content="Impl. live streaming system - RTMP: Introduction &amp; Basic Handshake" />
+<meta property="og:description" content="Introduction RTMP Protocol is a set of these three things
+ Handshake  Check reliable stream transport   Chunk Stream  Multiplexing Packetizing   Message  Video/Audio RPC    RTMP is message multiplexing protocol, not only media service.
+ Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/rtmp/handshake/" /><meta property="article:section" content="live-streaming" />
+<meta property="article:published_time" content="2022-02-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-02-16T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://blog.mjlee.ga/"><img class="app-header-avatar" src="/avatar.jpg" alt="Min-Jae Lee" /></a>
+      <h1>Min-Jae Lee</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+      </nav>
+      <p>Software Engineer</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/lminjae" target="_blank" rel="noreferrer noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>My Github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg>
+          </a>
+        
+          <a href="https://linkedin.com/in/lminjae" target="_blank" rel="noreferrer noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin">
+  <title>My LinkedIn</title>
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+</svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Impl. live streaming system - RTMP: Introduction &amp; Basic Handshake</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Feb 16, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="introduction">Introduction</h1>
+<p>RTMP Protocol is a set of these three things</p>
+<ul>
+<li>Handshake
+<ul>
+<li>Check reliable stream transport</li>
+</ul>
+</li>
+<li>Chunk Stream
+<ul>
+<li>Multiplexing</li>
+<li>Packetizing</li>
+</ul>
+</li>
+<li>Message
+<ul>
+<li>Video/Audio</li>
+<li>RPC</li>
+</ul>
+</li>
+</ul>
+<p>RTMP is message multiplexing protocol, not only media service.</p>
+<blockquote>
+<p>Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers.</p>
+</blockquote>
+<p>Handshake stage check protocol version and ping-pong echo(In specification, can be estimate of bandwidth, latency. but, not useful)</p>
+<blockquote>
+<p>Either peer can use the time and time2 fields together with the current timestamp as a quick estimate of the bandwidth and/or latency of the connection, but this is unlikely to be useful.</p>
+</blockquote>
+<p>Chunk Stream provides Multiplexing. Determine each stream, control connection(Notice chunk size, peer bandwidth, ACK).</p>
+<p>Messages over Chunk Stream are Video data, Audio data and AMF-coded RPC.
+Details of RTMP&rsquo;s Audio, Video Message are sharing FLV&rsquo;s AdobeMuxPacket.</p>
+<h1 id="handshake">Handshake</h1>
+<h2 id="sequence">Sequence</h2>
+<blockquote>
+<p>The handshake begins with the client sending the C0 and C1 chunks.
+The client MUST wait until S1 has been received before sending C2.
+The client MUST wait until S2 has been received before sending any other data.
+The server MUST wait until C0 has been received before sending S0 and S1, and MAY wait until after C1 as well.
+The server MUST wait until C1 has been received before sending S2.
+The server MUST wait until C2 has been received before sending any other data.</p>
+</blockquote>
+<p>Sequence Diagram that follow marked <strong>MUST</strong>.
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true})</script>
+
+
+<div class="mermaid" style="background: snow;" align="center">
+sequenceDiagram
+    Client->>Server: C0
+    Server->>Client: S0/S1
+    Client->>Server: C1
+    Server->>Client: S2
+    Client->>Server: C2
+</div>
+</p>
+<p>Simply</p>
+<ul>
+<li>S2/C2 require receive C1/S1.</li>
+<li>Server MUST check C0</li>
+</ul>
+<h2 id="c0s0">C0/S0</h2>
+<figure><svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="201" height="46" viewBox="0 0 201 46" ><text x="60" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >0</text><text x="100" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >1</text><text x="140" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >2</text><text x="180" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >3</text><line x1="40" y1="15" x2="200" y2="15" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="200" y2="45" stroke="#000000" stroke-width="1" /><line x1="200" y1="15" x2="200" y2="45" stroke="#000000" stroke-width="1" /><line x1="40" y1="15" x2="40" y2="45" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="120" y="31" text-anchor="middle" dominant-baseline="middle" >version</text></svg></figure>
+
+<ul>
+<li>Version
+<ul>
+<li>SHOULD be 3 (It means Version 1.0)</li>
+</ul>
+</li>
+</ul>
+<h2 id="c1s1">C1/S1</h2>
+<figure><svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="361" height="146" viewBox="0 0 361 146" ><text x="60" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >0</text><text x="100" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >1</text><text x="140" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >2</text><text x="180" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >3</text><text x="220" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >4</text><text x="260" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >5</text><text x="300" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >6</text><text x="340" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >7</text><line x1="40" y1="15" x2="200" y2="15" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="200" y2="45" stroke="#000000" stroke-width="1" /><line x1="200" y1="15" x2="200" y2="45" stroke="#000000" stroke-width="1" /><line x1="40" y1="15" x2="40" y2="45" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="120" y="31" text-anchor="middle" dominant-baseline="middle" >time</text><line x1="200" y1="15" x2="360" y2="15" stroke="#000000" stroke-width="1" /><line x1="200" y1="45" x2="360" y2="45" stroke="#000000" stroke-width="1" /><line x1="360" y1="15" x2="360" y2="45" stroke="#000000" stroke-width="1" /><line x1="200" y1="15" x2="200" y2="45" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Courier New, monospace" x="280" y="31" text-anchor="middle" dominant-baseline="middle" >00000000</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="30" text-anchor="end" >00</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="60" text-anchor="end" >08</text><line x1="40" y1="45" x2="40" y2="45" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="40" y2="75" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="40" y2="75" stroke="#000000" stroke-width="1" /><line x1="360" y1="45" x2="360" y2="75" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="40" y2="75" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="200" y="61" text-anchor="middle" dominant-baseline="middle" >random bytes (1528 bytes)</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="90" text-anchor="end" >10</text><line x1="40" y1="75" x2="40" y2="90" stroke="#000000" stroke-width="1" /><line x1="360" y1="75" x2="360" y2="90" stroke="#000000" stroke-width="1" /><line stroke-dasharray="1,1" x1="40" y1="90" x2="360" y2="120" stroke="#000000" stroke-width="1" /><line x1="360" y1="75" x2="360" y2="120" stroke="#000000" stroke-width="1" /><line stroke-dasharray="1,1" x1="40" y1="100" x2="360" y2="130" stroke="#000000" stroke-width="1" /><line x1="40" y1="100" x2="40" y2="130" stroke="#000000" stroke-width="1" /><line x1="40" y1="130" x2="40" y2="145" stroke="#000000" stroke-width="1" /><line x1="360" y1="130" x2="360" y2="145" stroke="#000000" stroke-width="1" /><text font-size="11" font-family="Palatino, Georgia, Times New Roman, serif" font-style="italic" dominant-baseline="middle" x="35" y="160" text-anchor="end" >i+<tspan font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" >00</tspan></text></svg></figure>
+
+<ul>
+<li>Time
+<ul>
+<li>may be 0</li>
+<li>To synchronize multiple chunkstreams: other chunkstream&rsquo;s timestamp</li>
+<li>timestamp is epoch in milliseconds</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>This may be 0, or some arbitrary value.
+To synchronize multiple chunkstreams, the endpoint may wish to send the current value of the other chunkstream’s timestamp.
+Timestamps in RTMP are given as an integer number of milliseconds relative to an unspecified epoch.</p>
+</blockquote>
+<ul>
+<li>Random bytes
+<ul>
+<li>SHOULD send something sufficiently random.</li>
+<li>no need for cryptographically-secure randomness, or even dynamic values</li>
+</ul>
+</li>
+</ul>
+<h3 id="random-number-generator-benchmark">Random Number Generator Benchmark</h3>
+<p>For this stage, need random bytes generation.
+That require no need dynamic values. but, I will use dynamic values that generated by well-known non-cryptographically-secure random number generator, <code>wyrng</code> from <a href="https://github.com/wangyi-fudan/wyhash"><code>wyhash</code></a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">wyrand</span>(seed: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> <span style="color:#66d9ef">u64</span>) -&gt; <span style="color:#66d9ef">u64</span> {
+    <span style="color:#f92672">*</span>seed <span style="color:#f92672">=</span> seed.wrapping_add(<span style="color:#ae81ff">0xa0761d6478bd642f</span>);
+    <span style="color:#66d9ef">let</span> r <span style="color:#f92672">=</span> <span style="color:#66d9ef">u128</span>::from(<span style="color:#f92672">*</span>seed) <span style="color:#f92672">*</span> <span style="color:#66d9ef">u128</span>::from(<span style="color:#f92672">*</span>seed <span style="color:#f92672">^</span> <span style="color:#ae81ff">0xe7037ed1a0b428db</span>);
+    ((r <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">64</span>) <span style="color:#f92672">^</span> r) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u64</span>
+}
+</code></pre></div><blockquote>
+<p>code from <a href="https://github.com/LMinJae/wyrng-rs">this repository</a></p>
+</blockquote>
+<p>For RTMP handshake, need to generate random 1528 bytes.
+Benchmark with <a href="https://github.com/rust-random/getrandom">getrandom</a>(this provide OS entropy sources).
+And some variants about value assignments(ex. no multiplication on loop)</p>
+<ul>
+<li>
+<p><code>MUST NOT</code> Using OS entropy sources as RNG. it can be using Side-Channel Attack.</p>
+</li>
+<li>
+<p>Default: direct access to <code>[u8; 1528]</code> array</p>
+</li>
+<li>
+<p>wyrand(with offset): replace array indexing <code>[8 * i + 0]</code> by <code>[offset + 0]</code>; commonly automatically optimized on compile time</p>
+</li>
+<li>
+<p>Insertion method s like <code>.put_u64(n)</code> is from <a href="https://docs.rs/bytes/latest/bytes/buf/trait.BufMut.html">bytes::buf::buf_mut::BufMut</a></p>
+</li>
+<li>
+<p>Scenario with <code>.put_slice(&amp;[u8])</code>: Generate random numbers into  <code>[u8; 1528]</code>, and than insert into collections(getrandom only support  <code>&amp;mut [u8]</code> as destication, directly access collection&rsquo;s memory is unsafe; not consider in this)</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getrandom</td>
+<td>6.3M iterations</td>
+</tr>
+<tr>
+<td>wyrand</td>
+<td><strong>9.5M</strong> iterations</td>
+</tr>
+<tr>
+<td>wyrand(with offset)</td>
+<td>9.5M iterations</td>
+</tr>
+<tr>
+<td>getrandom(with bytes, <code>.put_slice(&amp;[u8])</code>)</td>
+<td>5.4M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with bytes, <code>.put_slice(&amp;[u8])</code>)</td>
+<td>4.8M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with bytes, <code>.put_u64(n)</code>)</td>
+<td>3.4M iterations</td>
+</tr>
+<tr>
+<td>getrandom(with vec, <code>.put_slice(&amp;[u8])</code>)</td>
+<td>6.0M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.put_slice(.to_ne_bytes())</code>)</td>
+<td><strong>8.1M</strong> iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.put_slice(.to_be_bytes())</code>)</td>
+<td>7.9M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.put_slice(.to_le_bytes())</code>)</td>
+<td><strong>8.3M</strong> iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.put_u64(n)</code>)</td>
+<td>7.7M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.extend(.to_ne_bytes())</code>)</td>
+<td>4.1M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.extend(.to_be_bytes())</code>)</td>
+<td>4.1M iterations</td>
+</tr>
+<tr>
+<td>wyrand(with vec, <code>.extend(.to_le_bytes())</code>)</td>
+<td>4.1M iterations</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>With offset is not provide significant difference</li>
+<li>Using <a href="https://github.com/tokio-rs/bytes">Bytes</a> with [u8] array insertion is not good idea to provide random bytes</li>
+<li><a href="https://github.com/tokio-rs/bytes">Bytes</a> is slower than <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html">std::vec::Vec</a>.</li>
+<li>Using <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html">std::vec::Vec</a> with <code>.put_slice()</code> provide acceptable performance</li>
+<li><code>wyrand</code> with <code>std::vec::Vec</code> and <code>.put_slice()</code>is best score.</li>
+<li>Casting <code>u64</code> into <code>&amp;[u8]</code> by <code>to_ne_bytes()</code>, <code>to_be_bytes()</code>, and <code>to_le_bytes()</code>.
+<ul>
+<li><code>to_be_bytes()</code> was worst in every trials.</li>
+<li><code>to_ne_bytes()</code> and <code>to_le_bytes()</code> are simillar, but in my test enviroment(AMD Ryzen 7 4800HS no throttling configed labtop) <code>to_le_bytes()</code> is better.
+<ul>
+<li>maybe <code>ne</code>(native endian) has little overhead for determine which to use.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="c2s2">C2/S2</h2>
+<figure><svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="361" height="146" viewBox="0 0 361 146" ><text x="60" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >0</text><text x="100" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >1</text><text x="140" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >2</text><text x="180" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >3</text><text x="220" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >4</text><text x="260" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >5</text><text x="300" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >6</text><text x="340" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle" >7</text><line x1="40" y1="15" x2="200" y2="15" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="200" y2="45" stroke="#000000" stroke-width="1" /><line x1="200" y1="15" x2="200" y2="45" stroke="#000000" stroke-width="1" /><line x1="40" y1="15" x2="40" y2="45" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="120" y="31" text-anchor="middle" dominant-baseline="middle" >time</text><line x1="200" y1="15" x2="360" y2="15" stroke="#000000" stroke-width="1" /><line x1="200" y1="45" x2="360" y2="45" stroke="#000000" stroke-width="1" /><line x1="360" y1="15" x2="360" y2="45" stroke="#000000" stroke-width="1" /><line x1="200" y1="15" x2="200" y2="45" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="280" y="31" text-anchor="middle" dominant-baseline="middle" >time2</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="30" text-anchor="end" >00</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="60" text-anchor="end" >08</text><line x1="40" y1="45" x2="40" y2="45" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="40" y2="75" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="40" y2="75" stroke="#000000" stroke-width="1" /><line x1="360" y1="45" x2="360" y2="75" stroke="#000000" stroke-width="1" /><line x1="40" y1="45" x2="40" y2="75" stroke="#000000" stroke-width="1" /><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="200" y="61" text-anchor="middle" dominant-baseline="middle" >random bytes (1528 bytes)</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="90" text-anchor="end" >10</text><line x1="40" y1="75" x2="40" y2="90" stroke="#000000" stroke-width="1" /><line x1="360" y1="75" x2="360" y2="90" stroke="#000000" stroke-width="1" /><line stroke-dasharray="1,1" x1="40" y1="90" x2="360" y2="120" stroke="#000000" stroke-width="1" /><line x1="360" y1="75" x2="360" y2="120" stroke="#000000" stroke-width="1" /><line stroke-dasharray="1,1" x1="40" y1="100" x2="360" y2="130" stroke="#000000" stroke-width="1" /><line x1="40" y1="100" x2="40" y2="130" stroke="#000000" stroke-width="1" /><line x1="40" y1="130" x2="40" y2="145" stroke="#000000" stroke-width="1" /><line x1="360" y1="130" x2="360" y2="145" stroke="#000000" stroke-width="1" /><text font-size="11" font-family="Palatino, Georgia, Times New Roman, serif" font-style="italic" dominant-baseline="middle" x="35" y="160" text-anchor="end" >i+<tspan font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" >00</tspan></text></svg></figure>
+
+<ul>
+<li>
+<p>Time</p>
+<blockquote>
+<p>the timestamp sent by the peer in S1 (for C2) or C1 (for S2).</p>
+</blockquote>
+</li>
+<li>
+<p>Time2</p>
+<blockquote>
+<p>the timestamp at which the previous packet(s1 or c1) sent by the peer was read.</p>
+</blockquote>
+</li>
+<li>
+<p>Random bytes</p>
+<ul>
+<li>Echo C1/S1&rsquo;s Random bytes</li>
+</ul>
+</li>
+<li>
+<p>Echo Time and Random bytes</p>
+</li>
+<li>
+<p>Time and Time2 is used to estimate RTT(Round Trip Time)</p>
+</li>
+</ul>
+<h1 id="discussion">Discussion</h1>
+<ul>
+<li>Well-known RTMP implementation is <a href="https://github.com/ossrs/librtmp">librtmp</a>. but it is different with <a href="https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf">RTMP 1.0 Specification</a>
+<ul>
+<li>There is so many undocumented specifications exist.</li>
+<li>In <a href="https://github.com/ossrs/librtmp">librtmp</a>, time2 response is dead code. player version checking by C1&rsquo;s zero.(That defined <code>MUST be all 0s.</code> in specification)</li>
+</ul>
+</li>
+</ul>
+<p>Implemented codes pushed <a href="https://github.com/LMinJae/rtmp-rs">into my github</a></p>
+<h1 id="references">References</h1>
+<ul>
+<li><a href="https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf">RTMP 1.0 Specification</a></li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "mjlee" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
