@@ -59,9 +59,10 @@ Feb 11, 2022
 <li>live streaming + low latency bi-directional communication => game streaming service</li>
 </ul>
 <p>In this series, I want to cover the whole flow are explained below from scratch as possible as possible.</p>
-<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:!0})</script>
-<div class=mermaid style=background:snow align=center>
-flowchart LR
+<style>pre svg{background:snow;padding:10px}</style>
+<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script>
+<script>mermaid.initialize({startOnLoad:!0}),document.addEventListener('DOMContentLoaded',()=>{document.body.querySelectorAll('code.language-mermaid').forEach(a=>{mermaid.mermaidAPI.render("id",a.innerText,b=>{a.outerHTML=b})})})</script>
+<pre tabindex=0><code class=language-mermaid data-lang=mermaid>flowchart LR
 p(Streamer)
 subgraph Service Provider
 i(Ingest)
@@ -69,12 +70,11 @@ t(Transcoder)
 e(Edge)
 end
 s(Viewer)
-p --> i
-i --> t
-t --> e
-e --> s
-</div>
-<h1 id=select-protocols>Select Protocols</h1>
+p --&gt; i
+i --&gt; t
+t --&gt; e
+e --&gt; s
+</code></pre><h1 id=select-protocols>Select Protocols</h1>
 <p><code>TL;DR</code></p>
 <blockquote>
 <p>I will use <code>RTMP</code> and <code>HLS</code> with <code>CMAF</code></p>

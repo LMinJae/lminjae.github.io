@@ -46,7 +46,7 @@
 Feb 16, 2022
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-4 min read
+5 min read
 </div>
 </div>
 </header>
@@ -94,24 +94,28 @@ The server MUST wait until C1 has been received before sending S2.
 The server MUST wait until C2 has been received before sending any other data.</p>
 </blockquote>
 <p>Sequence Diagram that follow marked <strong>MUST</strong>.
-<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:!0})</script>
-<div class=mermaid style=background:snow align=center>
-sequenceDiagram
-Client->>Server: C0
-Server->>Client: S0/S1
-Client->>Server: C1
-Server->>Client: S2
-Client->>Server: C2
-</div>
+<style>pre svg{background:snow;padding:10px}</style>
+<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script>
+<script>mermaid.initialize({startOnLoad:!0}),document.addEventListener('DOMContentLoaded',()=>{document.body.querySelectorAll('code.language-mermaid').forEach(a=>{mermaid.mermaidAPI.render("id",a.innerText,b=>{a.outerHTML=b})})})</script>
 </p>
-<p>Simply</p>
+<pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+Client-&gt;&gt;Server: C0
+Server-&gt;&gt;Client: S0/S1
+Client-&gt;&gt;Server: C1
+Server-&gt;&gt;Client: S2
+Client-&gt;&gt;Server: C2
+</code></pre><p>Simply</p>
 <ul>
 <li>S2/C2 require receive C1/S1.</li>
 <li>Server MUST check C0</li>
 </ul>
 <h2 id=c0s0>C0/S0</h2>
-<figure><svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="201" height="46" viewBox="0 0 201 46"><text x="60" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><text x="100" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="140" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="180" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><line x1="40" y1="15" x2="200" y2="15" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="200" y2="45" stroke="#000" stroke-width="1"/><line x1="200" y1="15" x2="200" y2="45" stroke="#000" stroke-width="1"/><line x1="40" y1="15" x2="40" y2="45" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="120" y="31" text-anchor="middle" dominant-baseline="middle">version</text></svg></figure>
-<ul>
+<script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{document.body.querySelectorAll('code.language-bytefield').forEach(a=>{a.outerHTML=bytefield.generate(a.innerText,{embedded:!0})})})</script>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &quot;version&quot; {:span 4})
+</code></pre><ul>
 <li>Version
 <ul>
 <li>SHOULD be 3 (It means Version 1.0)</li>
@@ -119,8 +123,13 @@ Client->>Server: C2
 </li>
 </ul>
 <h2 id=c1s1>C1/S1</h2>
-<figure><svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="361" height="146" viewBox="0 0 361 146"><text x="60" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><text x="100" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="140" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="180" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><text x="220" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">4</text><text x="260" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">5</text><text x="300" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">6</text><text x="340" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">7</text><line x1="40" y1="15" x2="200" y2="15" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="200" y2="45" stroke="#000" stroke-width="1"/><line x1="200" y1="15" x2="200" y2="45" stroke="#000" stroke-width="1"/><line x1="40" y1="15" x2="40" y2="45" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="120" y="31" text-anchor="middle" dominant-baseline="middle">time</text><line x1="200" y1="15" x2="360" y2="15" stroke="#000" stroke-width="1"/><line x1="200" y1="45" x2="360" y2="45" stroke="#000" stroke-width="1"/><line x1="360" y1="15" x2="360" y2="45" stroke="#000" stroke-width="1"/><line x1="200" y1="15" x2="200" y2="45" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Courier New, monospace" x="280" y="31" text-anchor="middle" dominant-baseline="middle">00000000</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="30" text-anchor="end">00</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="60" text-anchor="end">08</text><line x1="40" y1="45" x2="40" y2="45" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="40" y2="75" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="40" y2="75" stroke="#000" stroke-width="1"/><line x1="360" y1="45" x2="360" y2="75" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="40" y2="75" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="200" y="61" text-anchor="middle" dominant-baseline="middle">random bytes (1528 bytes)</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="90" text-anchor="end">10</text><line x1="40" y1="75" x2="40" y2="90" stroke="#000" stroke-width="1"/><line x1="360" y1="75" x2="360" y2="90" stroke="#000" stroke-width="1"/><line stroke-dasharray="1,1" x1="40" y1="90" x2="360" y2="120" stroke="#000" stroke-width="1"/><line x1="360" y1="75" x2="360" y2="120" stroke="#000" stroke-width="1"/><line stroke-dasharray="1,1" x1="40" y1="100" x2="360" y2="130" stroke="#000" stroke-width="1"/><line x1="40" y1="100" x2="40" y2="130" stroke="#000" stroke-width="1"/><line x1="40" y1="130" x2="40" y2="145" stroke="#000" stroke-width="1"/><line x1="360" y1="130" x2="360" y2="145" stroke="#000" stroke-width="1"/><text font-size="11" font-family="Palatino, Georgia, Times New Roman, serif" font-style="italic" dominant-baseline="middle" x="35" y="160" text-anchor="end">i+<tspan font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle">00</tspan></text></svg></figure>
-<ul>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &quot;time&quot; {:span 4})
+(draw-box 0 {:span 4})
+(draw-gap &quot;random bytes (1528 bytes)&quot;)
+(draw-bottom)
+</code></pre><ul>
 <li>Time
 <ul>
 <li>may be 0</li>
@@ -257,8 +266,13 @@ And some variants about value assignments(ex. no multiplication on loop)</p>
 </li>
 </ul>
 <h2 id=c2s2>C2/S2</h2>
-<figure><svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="361" height="146" viewBox="0 0 361 146"><text x="60" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><text x="100" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="140" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="180" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><text x="220" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">4</text><text x="260" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">5</text><text x="300" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">6</text><text x="340" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">7</text><line x1="40" y1="15" x2="200" y2="15" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="200" y2="45" stroke="#000" stroke-width="1"/><line x1="200" y1="15" x2="200" y2="45" stroke="#000" stroke-width="1"/><line x1="40" y1="15" x2="40" y2="45" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="120" y="31" text-anchor="middle" dominant-baseline="middle">time</text><line x1="200" y1="15" x2="360" y2="15" stroke="#000" stroke-width="1"/><line x1="200" y1="45" x2="360" y2="45" stroke="#000" stroke-width="1"/><line x1="360" y1="15" x2="360" y2="45" stroke="#000" stroke-width="1"/><line x1="200" y1="15" x2="200" y2="45" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="280" y="31" text-anchor="middle" dominant-baseline="middle">time2</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="30" text-anchor="end">00</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="60" text-anchor="end">08</text><line x1="40" y1="45" x2="40" y2="45" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="40" y2="75" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="40" y2="75" stroke="#000" stroke-width="1"/><line x1="360" y1="45" x2="360" y2="75" stroke="#000" stroke-width="1"/><line x1="40" y1="45" x2="40" y2="75" stroke="#000" stroke-width="1"/><text font-size="18" font-family="Palatino, Georgia, Times New Roman, serif" x="200" y="61" text-anchor="middle" dominant-baseline="middle">random bytes (1528 bytes)</text><text font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle" x="35" y="90" text-anchor="end">10</text><line x1="40" y1="75" x2="40" y2="90" stroke="#000" stroke-width="1"/><line x1="360" y1="75" x2="360" y2="90" stroke="#000" stroke-width="1"/><line stroke-dasharray="1,1" x1="40" y1="90" x2="360" y2="120" stroke="#000" stroke-width="1"/><line x1="360" y1="75" x2="360" y2="120" stroke="#000" stroke-width="1"/><line stroke-dasharray="1,1" x1="40" y1="100" x2="360" y2="130" stroke="#000" stroke-width="1"/><line x1="40" y1="100" x2="40" y2="130" stroke="#000" stroke-width="1"/><line x1="40" y1="130" x2="40" y2="145" stroke="#000" stroke-width="1"/><line x1="360" y1="130" x2="360" y2="145" stroke="#000" stroke-width="1"/><text font-size="11" font-family="Palatino, Georgia, Times New Roman, serif" font-style="italic" dominant-baseline="middle" x="35" y="160" text-anchor="end">i+<tspan font-size="11" font-family="Courier New, monospace" font-style="normal" dominant-baseline="middle">00</tspan></text></svg></figure>
-<ul>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &quot;time&quot; {:span 4})
+(draw-box &quot;time2&quot; {:span 4})
+(draw-gap &quot;random bytes (1528 bytes)&quot;)
+(draw-bottom)
+</code></pre><ul>
 <li>
 <p>Time</p>
 <blockquote>

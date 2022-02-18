@@ -11,16 +11,10 @@
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="Impl. live streaming system: Rough design">
 <meta name=twitter:description content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
-mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
-Whole system require Low-Latency, High-Available and Low-Cost.
-So, detail system will be like this.
-flowchart LR p(Streamer) subgraph .">
+ pre svg { background: snow; padding: 10px; }    mermaid.initialize({startOnLoad:true}); document.addEventListener('DOMContentLoaded', () = { document.body.querySelectorAll('code.language-mermaid').forEach(n = { mermaid.mermaidAPI.render(&#34;id&#34;, n.innerText, (svg)={n.outerHTML = svg}) }) });  flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p -->|RTMP| i i --> t t --> e e -->|HLS\CMAF| s Each layers(Ingest, Transcoder, Edge) have different requirements.">
 <meta property="og:title" content="Impl. live streaming system: Rough design">
 <meta property="og:description" content="Introduction In previous post, I select RTMP and HLS with CMAF as a protocol between service and end-users(streamers and viewers).
-mermaid.initialize({startOnLoad:true}) flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p --|RTMP| i i -- t t -- e e --|HLS\CMAF| s  Each layers(Ingest, Transcoder, Edge) have different requirements.
-Whole system require Low-Latency, High-Available and Low-Cost.
-So, detail system will be like this.
-flowchart LR p(Streamer) subgraph .">
+ pre svg { background: snow; padding: 10px; }    mermaid.initialize({startOnLoad:true}); document.addEventListener('DOMContentLoaded', () = { document.body.querySelectorAll('code.language-mermaid').forEach(n = { mermaid.mermaidAPI.render(&#34;id&#34;, n.innerText, (svg)={n.outerHTML = svg}) }) });  flowchart LR p(Streamer) subgraph Service Provider i(Ingest) t(Transcoder) e(Edge) end s(Viewer) p -->|RTMP| i i --> t t --> e e -->|HLS\CMAF| s Each layers(Ingest, Transcoder, Edge) have different requirements.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.mjlee.ga/live-streaming/rough-design/"><meta property="article:section" content="live-streaming">
 <meta property="article:published_time" content="2022-02-14T00:00:00+00:00">
@@ -57,9 +51,10 @@ Feb 14, 2022
 <div class=post-content>
 <h1 id=introduction>Introduction</h1>
 <p>In previous post, I select <code>RTMP</code> and <code>HLS with CMAF</code> as a protocol between service and end-users(streamers and viewers).</p>
-<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:!0})</script>
-<div class=mermaid style=background:snow align=center>
-flowchart LR
+<style>pre svg{background:snow;padding:10px}</style>
+<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script>
+<script>mermaid.initialize({startOnLoad:!0}),document.addEventListener('DOMContentLoaded',()=>{document.body.querySelectorAll('code.language-mermaid').forEach(a=>{mermaid.mermaidAPI.render("id",a.innerText,b=>{a.outerHTML=b})})})</script>
+<pre tabindex=0><code class=language-mermaid data-lang=mermaid>flowchart LR
 p(Streamer)
 subgraph Service Provider
 i(Ingest)
@@ -67,16 +62,14 @@ t(Transcoder)
 e(Edge)
 end
 s(Viewer)
-p -->|RTMP| i
-i --> t
-t --> e
-e -->|HLS\CMAF| s
-</div>
-<p>Each layers(Ingest, Transcoder, Edge) have different requirements.</p>
+p --&gt;|RTMP| i
+i --&gt; t
+t --&gt; e
+e --&gt;|HLS\CMAF| s
+</code></pre><p>Each layers(Ingest, Transcoder, Edge) have different requirements.</p>
 <p>Whole system require Low-Latency, High-Available and Low-Cost.</p>
 <p>So, detail system will be like this.</p>
-<div class=mermaid style=background:snow align=center>
-flowchart LR
+<pre tabindex=0><code class=language-mermaid data-lang=mermaid>flowchart LR
 p(Streamer)
 subgraph .
 subgraph Ingest Pool
@@ -92,14 +85,13 @@ cdn(CDN)
 end
 end
 s(Viewer)
-p -->|RTMP| i
-i --> tq
-tq --> t
-t --> e
-e --> cdn
-cdn -->|HLS\CMAF| s
-</div>
-<h1 id=more-detail-about-systems>More detail about Systems</h1>
+p --&gt;|RTMP| i
+i --&gt; tq
+tq --&gt; t
+t --&gt; e
+e --&gt; cdn
+cdn --&gt;|HLS\CMAF| s
+</code></pre><h1 id=more-detail-about-systems>More detail about Systems</h1>
 <h2 id=ingest>Ingest</h2>
 <ul>
 <li>Primary objective is keep hold stream connection and passing into system immidiatly.</li>
