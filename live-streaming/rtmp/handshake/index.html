@@ -46,7 +46,7 @@
 Feb 16, 2022
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-5 min read
+4 min read
 </div>
 </div>
 </header>
@@ -94,9 +94,9 @@ The server MUST wait until C1 has been received before sending S2.
 The server MUST wait until C2 has been received before sending any other data.</p>
 </blockquote>
 <p>Sequence Diagram that follow marked <strong>MUST</strong>.
-<style>pre svg{background:snow;padding:10px}</style>
+<link rel=stylesheet href=/diagram.css>
 <script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script>
-<script>mermaid.initialize({startOnLoad:!0}),document.addEventListener('DOMContentLoaded',()=>{document.body.querySelectorAll('code.language-mermaid').forEach(a=>{mermaid.mermaidAPI.render("id",a.innerText,b=>{a.outerHTML=b})})})</script>
+<script src=/mermaid.js></script>
 </p>
 <pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
 Client-&gt;&gt;Server: C0
@@ -111,7 +111,7 @@ Client-&gt;&gt;Server: C2
 </ul>
 <h2 id=c0s0>C0/S0</h2>
 <script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
-<script>document.addEventListener('DOMContentLoaded',()=>{document.body.querySelectorAll('code.language-bytefield').forEach(a=>{a.outerHTML=bytefield.generate(a.innerText,{embedded:!0})})})</script>
+<script src=/bytefield.js></script>
 <pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
 (draw-column-headers)
 (draw-box &quot;version&quot; {:span 4})

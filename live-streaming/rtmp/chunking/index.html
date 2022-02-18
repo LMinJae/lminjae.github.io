@@ -1,0 +1,374 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>Impl. live streaming system - RTMP: Chunking // Min-Jae Lee</title>
+<link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.92.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Impl. live streaming system - RTMP: Chunking">
+<meta name=twitter:description content="Introduction Chunking provides multiplexes multiple chunk stream.
+  (def row-header-fn {}) (def boxes-per-row 12) (draw-box &#34;Basic Header&#34; {:span 3}) (draw-box &#34;Message Header&#34; {:span 4}) (draw-box &#34;Extended Timestamp&#34; {:span 5}) (draw-gap &#34;Payload&#34;) (draw-bottom) Default Chunk size is 128 bytes. Chunk size is maximum length of payload. So, If you want to send 200 bytes. than that message split into 2 chunk. (like below diagram)
+(def row-header-fn {}) (def boxes-per-row 12) (draw-box &#34;Basic Header&#34; {:span 3}) (draw-box &#34;Message Header&#34; {:span 4}) (draw-gap &#34;Payload (128 bytes)&#34;) (draw-bottom) (draw-box &#34;Basic Header&#34; {:span 3}) (draw-gap &#34;Payload (72 bytes)&#34;) (draw-bottom) Header Basic header  cs_id is chunk stream id that indicates following chunk&rsquo;s stream context.">
+<meta property="og:title" content="Impl. live streaming system - RTMP: Chunking">
+<meta property="og:description" content="Introduction Chunking provides multiplexes multiple chunk stream.
+  (def row-header-fn {}) (def boxes-per-row 12) (draw-box &#34;Basic Header&#34; {:span 3}) (draw-box &#34;Message Header&#34; {:span 4}) (draw-box &#34;Extended Timestamp&#34; {:span 5}) (draw-gap &#34;Payload&#34;) (draw-bottom) Default Chunk size is 128 bytes. Chunk size is maximum length of payload. So, If you want to send 200 bytes. than that message split into 2 chunk. (like below diagram)
+(def row-header-fn {}) (def boxes-per-row 12) (draw-box &#34;Basic Header&#34; {:span 3}) (draw-box &#34;Message Header&#34; {:span 4}) (draw-gap &#34;Payload (128 bytes)&#34;) (draw-bottom) (draw-box &#34;Basic Header&#34; {:span 3}) (draw-gap &#34;Payload (72 bytes)&#34;) (draw-bottom) Header Basic header  cs_id is chunk stream id that indicates following chunk&rsquo;s stream context.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/rtmp/chunking/"><meta property="article:section" content="live-streaming">
+<meta property="article:published_time" content="2022-02-18T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-02-18T00:00:00+00:00">
+</head>
+<body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1>
+<nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+</nav>
+<p>Software Engineer</p>
+<div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
+</div>
+</header>
+<main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Impl. live streaming system - RTMP: Chunking</h1>
+<div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Feb 18, 2022
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+5 min read
+</div>
+</div>
+</header>
+<div class=post-content>
+<h1 id=introduction>Introduction</h1>
+<p>Chunking provides multiplexes multiple chunk stream.</p>
+<link rel=stylesheet href=/diagram.css>
+<script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
+<script src=/bytefield.js></script>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def row-header-fn {})
+(def boxes-per-row 12)
+(draw-box &quot;Basic Header&quot; {:span 3})
+(draw-box &quot;Message Header&quot; {:span 4})
+(draw-box &quot;Extended Timestamp&quot; {:span 5})
+(draw-gap &quot;Payload&quot;)
+(draw-bottom)
+</code></pre><p>Default Chunk size is 128 bytes.
+Chunk size is maximum length of payload.
+So, If you want to send 200 bytes. than that message split into 2 chunk. (like below diagram)</p>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def row-header-fn {})
+(def boxes-per-row 12)
+(draw-box &quot;Basic Header&quot; {:span 3})
+(draw-box &quot;Message Header&quot; {:span 4})
+(draw-gap &quot;Payload (128 bytes)&quot;)
+(draw-bottom)
+(draw-box &quot;Basic Header&quot; {:span 3})
+(draw-gap &quot;Payload (72 bytes)&quot;)
+(draw-bottom)
+</code></pre><h1 id=header>Header</h1>
+<h2 id=basic-header>Basic header</h2>
+<ul>
+<li><code>cs_id</code> is chunk stream id that indicates following chunk&rsquo;s stream context.</li>
+<li><code>cs_id</code> 0, 1 and 2 are reserved.</li>
+<li><code>cs_id</code> 2 is low-level protocol control messages and commands.</li>
+</ul>
+<p>Basic header has 3 type. 1, 2, 3 bytes.</p>
+<p>1 byte header can represent <code>cs_id</code> range 2-63
+<link rel=stylesheet href=/wavedrom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/wavedrom/2.6.8/skins/default.js type=text/javascript></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/wavedrom/2.6.8/wavedrom.min.js type=text/javascript></script>
+<script src=/wavedrom.js type=text/javascript></script>
+</p>
+<pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&quot;bits&quot;: 2, &quot;name&quot;: &quot;fmt&quot;, &quot;type&quot;: 2},
+  {&quot;bits&quot;: 6, &quot;name&quot;: &quot;cs_id&quot;},
+  {&quot;bits&quot;: 16},
+], config: {vflip: true, bits: 24}}
+</code></pre><p>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css integrity=sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js integrity=sha384-VQ8d8WVFw0yHhCk5E8I86oOhv48xLpnDZx5T9GogA/Y84DcCKWXDmSDfn13bzFZY crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous></script>
+<script src=/katex.js></script>
+<script defer src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script>
+Calculation: cs_id $= 0b00111111 | \text{(1st byte)}$</p>
+<p>else if <code>cs_id</code> range 64~319(64+255(0xFF)), use 2 bytes</p>
+<pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&quot;bits&quot;: 2, &quot;name&quot;: &quot;fmt&quot;, &quot;type&quot;: 2},
+  {&quot;bits&quot;: 6, &quot;name&quot;: 64},
+  {&quot;bits&quot;: 8, &quot;name&quot;: &quot;cs_id - 64&quot;},
+  {&quot;bits&quot;: 8},
+], config: {vflip: true, bits: 24}}
+</code></pre><p>Calculation: cs_id $= \text{(2nd byte)} + 64$</p>
+<p>else <code>cs_id</code> range 64~65599(64+65535(0xFFFF))</p>
+<pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&quot;bits&quot;: 2, &quot;name&quot;: &quot;fmt&quot;, &quot;type&quot;: 2},
+  {&quot;bits&quot;: 6, &quot;name&quot;: 63},
+  {&quot;bits&quot;: 16, &quot;name&quot;: &quot;cs_id - 64&quot;},
+], config: {vflip: true, bits: 24}}
+</code></pre><p>Calculation: cs_id $= \text{(2nd byte)} + 64 + \text{(3rd byte)} \times 256$</p>
+<p>3 bytes basic header can cover even 2 bytes. but, when send chunk message prefer shorter is better performance.</p>
+<blockquote>
+<p>An implementation SHOULD use the smallest representation that can hold the ID.</p>
+</blockquote>
+<h2 id=message-header>Message header</h2>
+<h3 id=type-0>Type 0</h3>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def box-width 160)
+(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &quot;timestamp&quot; {:span 3})
+(draw-box &quot;message length&quot; {:span 1})
+(draw-box &quot;message length&quot; {:span 2})
+(draw-box &quot;message type id&quot; {:span 1})
+(draw-box &quot;message stream id&quot; {:span 1})
+(draw-box &quot;message stream id&quot; {:span 3})
+</code></pre><ul>
+<li>11 bytes long</li>
+<li>All message reqiore timestamp, message lenagh, message type, and message stream id. Nothing optional.</li>
+<li>All chunk stream start with Type 0 header</li>
+</ul>
+<blockquote>
+<p>MUST be used at the start of a chunk stream</p>
+</blockquote>
+<h3 id=type-1>Type 1</h3>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def box-width 160)
+(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &quot;timestamp delta&quot; {:span 3})
+(draw-box &quot;message length&quot; {:span 1})
+(draw-box &quot;message length&quot; {:span 2})
+(draw-box &quot;message type id&quot; {:span 1})
+</code></pre><ul>
+<li>
+<p>7 bytes long</p>
+</li>
+<li>
+<p>Same message stream id from previous chunk that has same <code>cs_id</code></p>
+</li>
+<li>
+<p>Timestamp <code>delta</code> in Type 1, 2.</p>
+</li>
+</ul>
+<blockquote>
+<p>the difference between the previous chunk’s timestamp and the current chunk’s timestamp is sent here.</p>
+</blockquote>
+<h3 id=type-2>Type 2</h3>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def box-width 160)
+(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &quot;timestamp delta&quot; {:span 3})
+</code></pre><h3 id=type-3>Type 3</h3>
+<ul>
+<li>When Message spliting(Fragmentation), then this type sent</li>
+</ul>
+<blockquote>
+<p>When a single message is split into chunks, all chunks of a message except the first one SHOULD use this type.</p>
+</blockquote>
+<ul>
+<li>Using previous received chunk&rsquo;s header information</li>
+</ul>
+<blockquote>
+<p>A stream consisting of messages of exactly the same size, stream ID and spacing in time SHOULD use this type for all chunks after a chunk of Type 2.</p>
+</blockquote>
+<ul>
+<li>Use previous received timestamp setup</li>
+</ul>
+<blockquote>
+<p>If the delta between the first message and the second message is same as the timestamp of the first message, then a chunk of Type 3 could immediately follow the chunk of Type 0 as there is no need for a chunk of Type 2 to register the delta. If a Type 3 chunk follows a Type 0 chunk, then the timestamp delta for this Type 3 chunk is the same as the timestamp of the Type 0 chunk.</p>
+</blockquote>
+<h3 id=example>Example</h3>
+<h4 id=example-1-keep-message-header>Example 1: Keep message header</h4>
+<p>Given case is Audio stream.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Message Stream ID</th>
+<th>Message Type ID</th>
+<th>Time</th>
+<th>Length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1</td>
+<td>12345</td>
+<td>8</td>
+<td>1000</td>
+<td>32</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>12345</td>
+<td>8</td>
+<td>1020</td>
+<td>32</td>
+</tr>
+<tr>
+<td>#3</td>
+<td>12345</td>
+<td>8</td>
+<td>1040</td>
+<td>32</td>
+</tr>
+<tr>
+<td>#4</td>
+<td>12345</td>
+<td>8</td>
+<td>1060</td>
+<td>32</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Chunk Stream ID</th>
+<th>Chunk Type</th>
+<th>Header Data</th>
+<th>Payload Length</th>
+<th>Chunk Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1</td>
+<td>3</td>
+<td>0</td>
+<td>Timestamp: 1000; Length: 32; Type: 8; Stream ID: 12345</td>
+<td>32</td>
+<td>44</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>3</td>
+<td>2</td>
+<td>Timestamp Delta: 20</td>
+<td>32</td>
+<td>36</td>
+</tr>
+<tr>
+<td>#3</td>
+<td>3</td>
+<td>3</td>
+<td>-</td>
+<td>32</td>
+<td>33</td>
+</tr>
+<tr>
+<td>#4</td>
+<td>3</td>
+<td>3</td>
+<td>-</td>
+<td>32</td>
+<td>33</td>
+</tr>
+</tbody>
+</table>
+<p>Message #1~#4 has same <code>Stream ID</code>, <code>Type ID</code>, and <code>Length</code>;</p>
+<p>Difference is <code>Timestamp</code> and payload data.</p>
+<p>So, Chunk stream keep message header that recorded at #1 and keep using determine by chunk stream id.</p>
+<p>Chunk #2 setting timestamp delta, is affect #2~#4.</p>
+<p>#3~#4, Only transmit payload data .</p>
+<h4 id=example-2-message-splitingfragmentation>Example 2: Message spliting(Fragmentation)</h4>
+<p>Given case is Video stream.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Message Stream ID</th>
+<th>Message Type ID</th>
+<th>Time</th>
+<th>Length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1</td>
+<td>12346</td>
+<td>9</td>
+<td>1000</td>
+<td>307</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Chunk Stream ID</th>
+<th>Chunk Type</th>
+<th>Header Data</th>
+<th>Payload Length</th>
+<th>Chunk Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1</td>
+<td>3</td>
+<td>0</td>
+<td>Timestamp: 1000; Length: 307; Type: 9; Stream ID: 12346</td>
+<td>128</td>
+<td>140</td>
+</tr>
+<tr>
+<td>#2</td>
+<td>3</td>
+<td>3</td>
+<td>-</td>
+<td>128</td>
+<td>129</td>
+</tr>
+<tr>
+<td>#3</td>
+<td>3</td>
+<td>3</td>
+<td>-</td>
+<td>51</td>
+<td>52</td>
+</tr>
+</tbody>
+</table>
+<p>Default chunk size is 128 bytes. (Chunk size meaning maximum payload length, not chunk packet size)</p>
+<p>307 bytes is greater than 128.</p>
+<p>Chunk #1 Setup message information(Type 0: fully described header), with 128 bytes payload.</p>
+<p>Chunk #2, Using same message header. with 128 bytes payload.</p>
+<p>Chunk #2, Left payload = (message lenth 307 bytes) - (previous received payload 256 bytes( = 128 + 128)) = 51 bytes.</p>
+<p>Read 51 bytes. then process received message.</p>
+<h1 id=discussion>Discussion</h1>
+<ul>
+<li>THe primary objective of RTMP Chunk Stream is multiplexing and packetizing.</li>
+<li>Multiplexing is shown as <code>cs_id</code>, than identify each stream.</li>
+<li>Packetizing is shown as Fragmentaion(message spliting).
+<ul>
+<li>Prevent occupy connection by large message passing.</li>
+</ul>
+</li>
+<li>Chunk stream keeping previous message header to reduce transmition same information.</li>
+</ul>
+<h1 id=references>References</h1>
+<ul>
+<li><a href=https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf>RTMP 1.0 Specification</a></li>
+</ul>
+</div>
+<div class=post-footer>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//mjlee.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+</article>
+</main>
+</body>
+</html>
