@@ -1,9 +1,1 @@
-document.addEventListener('DOMContentLoaded', () => {
-    ('undefined' !== typeof WaveDrom) && !!WaveDrom.ProcessAll && document.body.querySelectorAll('code.language-wavedrom').forEach(n => {
-        let s = document.createElement('script');
-        s.setAttribute('type', 'WaveDrom');
-        s.innerHTML = n.innerHTML;
-        n.outerHTML = s.outerHTML;
-    });
-    WaveDrom.ProcessAll();
-});
+document.addEventListener('DOMContentLoaded',()=>{('undefined'!==typeof WaveDrom)&&!!WaveDrom.ProcessAll&&((d)=>{let s=d.createElement('style');s.innerText='svg.WaveDrom{height:200%}';(d.head||d.body).appendChild(s);})(document)&&document.body.querySelectorAll('code.language-wavedrom').forEach(n=>{let f=document.createElement('script');f.setAttribute('type','WaveDrom');f.innerHTML=n.innerHTML;n.outerHTML=f.outerHTML;})&&WaveDrom.ProcessAll();});
