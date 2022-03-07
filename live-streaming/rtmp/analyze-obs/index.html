@@ -175,7 +175,7 @@ But, OBS studio is open source and it use librtmp that rtmp implementation from 
 <p>Audio, Video, Data(metadata and media header) are defined in <a href=https://www.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10_1.pdf>FLV</a></p></li><li>
 <p>OBS process special message <a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L276>Silent Reconnect (0x20)</a></p><ul>
 <li>OBS reconnect <a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L636-L642>at nearest keyframe</a></li><li>Can be useful in server-side for rebalancing connection or graceful shutdown.</li></ul></li><li>
-<p>Drop frame is only apply video packet.</p><ul>
+<p>Drop frame is occured by video packet that has exceed threshold.</p><ul>
 <li><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L1258-L1266>DO NOT drop Audio packet and video keyframe</a></li></ul></li></ul><h1 id=discussions>Discussions</h1><ul>
 <li><a href=https://twitch.tv/>Twitch</a> support two audio track, Live track and VOD(DCMA-free) track.
 <ul>
