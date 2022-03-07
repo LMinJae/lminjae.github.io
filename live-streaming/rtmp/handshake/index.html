@@ -1,15 +1,14 @@
 <!doctype html><html lang=en-us>
 <head>
-<title>Impl. live streaming system - RTMP: Introduction & Basic Handshake // Min-Jae Lee</title>
-<link rel="shortcut icon" href=/favicon.ico>
+<title>Impl. live streaming system - RTMP: Introduction & Basic Handshake // Min-Jae Lee</title><link rel="shortcut icon" href=/favicon.ico>
 <meta charset=utf-8>
-<meta name=generator content="Hugo 0.92.2">
+<meta name=generator content="Hugo 0.93.2">
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta name=author content="Min-Jae Lee">
 <meta name=description content>
 <link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.4a7ec8660f9a44b08c4da97c5f2e31b1192df1d4d0322e65c0dbbc6ecb1b863f.css>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-8E53QTVV68"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-8E53QTVV68',{anonymize_ip:!1})}</script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-8E53QTVV68",{anonymize_ip:!1})}</script>
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="Impl. live streaming system - RTMP: Introduction & Basic Handshake">
 <meta name=twitter:description content="Introduction RTMP Protocol is a set of these three things
@@ -23,312 +22,139 @@
 <meta property="og:url" content="https://blog.mjlee.ga/live-streaming/rtmp/handshake/"><meta property="article:section" content="live-streaming">
 <meta property="article:published_time" content="2022-02-16T00:00:00+00:00">
 <meta property="article:modified_time" content="2022-02-16T00:00:00+00:00">
-</head>
-<body>
+</head><body>
 <header class=app-header>
 <a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
-<h1>Min-Jae Lee</h1>
-<nav class=app-header-menu>
+<h1>Min-Jae Lee</h1><nav class=app-header-menu>
 <a class=app-header-menu-item href=/>Home</a>
 -
 <a class=app-header-menu-item href=/tags/>Tags</a>
-</nav>
-<p>Software Engineer</p>
-<div class=app-header-social>
+</nav><p>Software Engineer</p><div class=app-header-social>
 <a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
 </a>
 <a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
 </a>
-</div>
-</header>
-<main class=app-container>
+</div></header><main class=app-container>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title>Impl. live streaming system - RTMP: Introduction & Basic Handshake</h1>
-<div class=post-meta>
+<h1 class=post-title>Impl. live streaming system - RTMP: Introduction & Basic Handshake</h1><div class=post-meta>
 <div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 Feb 16, 2022
-</div>
-<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 4 min read
-</div>
-<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
 <a class=tag href=https://blog.mjlee.ga/tags/development/>Development</a>
 <a class=tag href=https://blog.mjlee.ga/tags/live-streaming/>Live-Streaming</a>
 <a class=tag href=https://blog.mjlee.ga/tags/rtmp/>RTMP</a>
-</div>
-</div>
-</header>
-<div class=post-content>
-<h1 id=introduction>Introduction</h1>
-<p>RTMP Protocol is a set of these three things</p>
-<ul>
+</div></div></header><div class=post-content>
+<h1 id=introduction>Introduction</h1><p>RTMP Protocol is a set of these three things</p><ul>
 <li>Handshake
 <ul>
-<li>Check reliable stream transport</li>
-</ul>
-</li>
-<li>Chunk Stream
+<li>Check reliable stream transport</li></ul></li><li>Chunk Stream
 <ul>
-<li>Multiplexing</li>
-<li>Packetizing</li>
-</ul>
-</li>
-<li>Message
+<li>Multiplexing</li><li>Packetizing</li></ul></li><li>Message
 <ul>
-<li>Video/Audio</li>
-<li>RPC</li>
-</ul>
-</li>
-</ul>
-<p>RTMP is message multiplexing protocol, not only media service.</p>
-<blockquote>
-<p>Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers.</p>
-</blockquote>
-<p>Handshake stage check protocol version and ping-pong echo(In specification, can be estimate of bandwidth, latency. but, not useful)</p>
-<blockquote>
-<p>Either peer can use the time and time2 fields together with the current timestamp as a quick estimate of the bandwidth and/or latency of the connection, but this is unlikely to be useful.</p>
-</blockquote>
-<p>Chunk Stream provides Multiplexing. Determine each stream, control connection(Notice chunk size, peer bandwidth, ACK).</p>
-<p>Messages over Chunk Stream are Video data, Audio data and AMF-coded RPC.
-Details of RTMP&rsquo;s Audio, Video Message are sharing FLV&rsquo;s AdobeMuxPacket.</p>
-<h1 id=handshake>Handshake</h1>
-<h2 id=sequence>Sequence</h2>
-<blockquote>
+<li>Video/Audio</li><li>RPC</li></ul></li></ul><p>RTMP is message multiplexing protocol, not only media service.</p><blockquote>
+<p>Adobe’s Real Time Messaging Protocol (RTMP) provides a bidirectional message multiplex service over a reliable stream transport, such as TCP [RFC0793], intended to carry parallel streams of video, audio, and data messages, with associated timing information, between a pair of communicating peers.</p></blockquote><p>Handshake stage check protocol version and ping-pong echo(In specification, can be estimate of bandwidth, latency. but, not useful)</p><blockquote>
+<p>Either peer can use the time and time2 fields together with the current timestamp as a quick estimate of the bandwidth and/or latency of the connection, but this is unlikely to be useful.</p></blockquote><p>Chunk Stream provides Multiplexing. Determine each stream, control connection(Notice chunk size, peer bandwidth, ACK).</p><p>Messages over Chunk Stream are Video data, Audio data and AMF-coded RPC.
+Details of RTMP&rsquo;s Audio, Video Message are sharing FLV&rsquo;s AdobeMuxPacket.</p><h1 id=handshake>Handshake</h1><h2 id=sequence>Sequence</h2><blockquote>
 <p>The handshake begins with the client sending the C0 and C1 chunks.
 The client MUST wait until S1 has been received before sending C2.
 The client MUST wait until S2 has been received before sending any other data.
 The server MUST wait until C0 has been received before sending S0 and S1, and MAY wait until after C1 as well.
 The server MUST wait until C1 has been received before sending S2.
-The server MUST wait until C2 has been received before sending any other data.</p>
-</blockquote>
-<p>Sequence Diagram that follow marked <strong>MUST</strong>.
+The server MUST wait until C2 has been received before sending any other data.</p></blockquote><p>Sequence Diagram that follow marked <strong>MUST</strong>.
 <link rel=stylesheet href=/diagram.css>
 <script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script>
 <script src=/mermaid.js></script>
-</p>
-<pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+</p><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
 Client-&gt;&gt;Server: C0
 Server-&gt;&gt;Client: S0/S1
 Client-&gt;&gt;Server: C1
 Server-&gt;&gt;Client: S2
 Client-&gt;&gt;Server: C2
-</code></pre><p>Simply</p>
-<ul>
-<li>S2/C2 require receive C1/S1.</li>
-<li>Server MUST check C0</li>
-</ul>
-<h2 id=c0s0>C0/S0</h2>
-<script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
+</code></pre><p>Simply</p><ul>
+<li>S2/C2 require receive C1/S1.</li><li>Server MUST check C0</li></ul><h2 id=c0s0>C0/S0</h2><script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
 <script src=/bytefield.js></script>
 <pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
 (draw-column-headers)
-(draw-box &quot;version&quot; {:span 4})
+(draw-box &#34;version&#34; {:span 4})
 </code></pre><ul>
 <li>Version
 <ul>
-<li>SHOULD be 3 (It means Version 1.0)</li>
-</ul>
-</li>
-</ul>
-<h2 id=c1s1>C1/S1</h2>
-<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+<li>SHOULD be 3 (It means Version 1.0)</li></ul></li></ul><h2 id=c1s1>C1/S1</h2><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
 (draw-column-headers)
-(draw-box &quot;time&quot; {:span 4})
+(draw-box &#34;time&#34; {:span 4})
 (draw-box 0 {:span 4})
-(draw-gap &quot;random bytes (1528 bytes)&quot;)
+(draw-gap &#34;random bytes (1528 bytes)&#34;)
 (draw-bottom)
 </code></pre><ul>
 <li>Time
 <ul>
-<li>may be 0</li>
-<li>To synchronize multiple chunkstreams: other chunkstream&rsquo;s timestamp</li>
-<li>timestamp is epoch in milliseconds</li>
-</ul>
-</li>
-</ul>
-<blockquote>
+<li>may be 0</li><li>To synchronize multiple chunkstreams: other chunkstream&rsquo;s timestamp</li><li>timestamp is epoch in milliseconds</li></ul></li></ul><blockquote>
 <p>This may be 0, or some arbitrary value.
 To synchronize multiple chunkstreams, the endpoint may wish to send the current value of the other chunkstream’s timestamp.
-Timestamps in RTMP are given as an integer number of milliseconds relative to an unspecified epoch.</p>
-</blockquote>
-<ul>
+Timestamps in RTMP are given as an integer number of milliseconds relative to an unspecified epoch.</p></blockquote><ul>
 <li>Random bytes
 <ul>
-<li>SHOULD send something sufficiently random.</li>
-<li>no need for cryptographically-secure randomness, or even dynamic values</li>
-</ul>
-</li>
-</ul>
-<h3 id=random-number-generator-benchmark>Random Number Generator Benchmark</h3>
-<p>For this stage, need random bytes generation.
-That require no need dynamic values. but, I will use dynamic values that generated by well-known non-cryptographically-secure random number generator, <code>wyrng</code> from <a href=https://github.com/wangyi-fudan/wyhash><code>wyhash</code></a>.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>wyrand</span>(seed: <span style=color:#66d9ef>&amp;</span><span style=color:#a6e22e>mut</span> <span style=color:#66d9ef>u64</span>) -&gt; <span style=color:#66d9ef>u64</span> {
-    <span style=color:#f92672>*</span>seed <span style=color:#f92672>=</span> seed.wrapping_add(<span style=color:#ae81ff>0xa0761d6478bd642f</span>);
-    <span style=color:#66d9ef>let</span> r <span style=color:#f92672>=</span> <span style=color:#66d9ef>u128</span>::from(<span style=color:#f92672>*</span>seed) <span style=color:#f92672>*</span> <span style=color:#66d9ef>u128</span>::from(<span style=color:#f92672>*</span>seed <span style=color:#f92672>^</span> <span style=color:#ae81ff>0xe7037ed1a0b428db</span>);
-    ((r <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>64</span>) <span style=color:#f92672>^</span> r) <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u64</span>
-}
-</code></pre></div><blockquote>
-<p>code from <a href=https://github.com/LMinJae/wyrng-rs>this repository</a></p>
-</blockquote>
-<p>For RTMP handshake, need to generate random 1528 bytes.
+<li>SHOULD send something sufficiently random.</li><li>no need for cryptographically-secure randomness, or even dynamic values</li></ul></li></ul><h3 id=random-number-generator-benchmark>Random Number Generator Benchmark</h3><p>For this stage, need random bytes generation.
+That require no need dynamic values. but, I will use dynamic values that generated by well-known non-cryptographically-secure random number generator, <code>wyrng</code> from <a href=https://github.com/wangyi-fudan/wyhash><code>wyhash</code></a>.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>wyrand</span>(seed: <span style=color:#66d9ef>&amp;</span><span style=color:#a6e22e>mut</span> <span style=color:#66d9ef>u64</span>) -&gt; <span style=color:#66d9ef>u64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>seed <span style=color:#f92672>=</span> seed.wrapping_add(<span style=color:#ae81ff>0xa0761d6478bd642f</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> r <span style=color:#f92672>=</span> <span style=color:#66d9ef>u128</span>::from(<span style=color:#f92672>*</span>seed) <span style=color:#f92672>*</span> <span style=color:#66d9ef>u128</span>::from(<span style=color:#f92672>*</span>seed <span style=color:#f92672>^</span> <span style=color:#ae81ff>0xe7037ed1a0b428db</span>);
+</span></span><span style=display:flex><span>    ((r <span style=color:#f92672>&gt;&gt;</span> <span style=color:#ae81ff>64</span>) <span style=color:#f92672>^</span> r) <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u64</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><blockquote>
+<p>code from <a href=https://github.com/LMinJae/wyrng-rs>this repository</a></p></blockquote><p>For RTMP handshake, need to generate random 1528 bytes.
 Benchmark with <a href=https://github.com/rust-random/getrandom>getrandom</a>(this provide OS entropy sources).
-And some variants about value assignments(ex. no multiplication on loop)</p>
-<ul>
+And some variants about value assignments(ex. no multiplication on loop)</p><ul>
 <li>
-<p><code>MUST NOT</code> Using OS entropy sources as RNG. it can be using Side-Channel Attack.</p>
-</li>
-<li>
-<p>Default: direct access to <code>[u8; 1528]</code> array</p>
-</li>
-<li>
-<p>wyrand(with offset): replace array indexing <code>[8 * i + 0]</code> by <code>[offset + 0]</code>; commonly automatically optimized on compile time</p>
-</li>
-<li>
-<p>Insertion method s like <code>.put_u64(n)</code> is from <a href=https://docs.rs/bytes/latest/bytes/buf/trait.BufMut.html>bytes::buf::buf_mut::BufMut</a></p>
-</li>
-<li>
-<p>Scenario with <code>.put_slice(&[u8])</code>: Generate random numbers into <code>[u8; 1528]</code>, and than insert into collections(getrandom only support <code>&mut [u8]</code> as destication, directly access collection&rsquo;s memory is unsafe; not consider in this)</p>
-</li>
-</ul>
-<table>
+<p><code>MUST NOT</code> Using OS entropy sources as RNG. it can be using Side-Channel Attack.</p></li><li>
+<p>Default: direct access to <code>[u8; 1528]</code> array</p></li><li>
+<p>wyrand(with offset): replace array indexing <code>[8 * i + 0]</code> by <code>[offset + 0]</code>; commonly automatically optimized on compile time</p></li><li>
+<p>Insertion method s like <code>.put_u64(n)</code> is from <a href=https://docs.rs/bytes/latest/bytes/buf/trait.BufMut.html>bytes::buf::buf_mut::BufMut</a></p></li><li>
+<p>Scenario with <code>.put_slice(&[u8])</code>: Generate random numbers into <code>[u8; 1528]</code>, and than insert into collections(getrandom only support <code>&mut [u8]</code> as destication, directly access collection&rsquo;s memory is unsafe; not consider in this)</p></li></ul><table>
 <thead>
 <tr>
-<th>Tag</th>
-<th>Measured</th>
-</tr>
-</thead>
-<tbody>
+<th>Tag</th><th>Measured</th></tr></thead><tbody>
 <tr>
-<td>getrandom</td>
-<td>6.3M iterations</td>
-</tr>
-<tr>
-<td>wyrand</td>
-<td><strong>9.5M</strong> iterations</td>
-</tr>
-<tr>
-<td>wyrand(with offset)</td>
-<td>9.5M iterations</td>
-</tr>
-<tr>
-<td>getrandom(with bytes, <code>.put_slice(&[u8])</code>)</td>
-<td>5.4M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with bytes, <code>.put_slice(&[u8])</code>)</td>
-<td>4.8M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with bytes, <code>.put_u64(n)</code>)</td>
-<td>3.4M iterations</td>
-</tr>
-<tr>
-<td>getrandom(with vec, <code>.put_slice(&[u8])</code>)</td>
-<td>6.0M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.put_slice(.to_ne_bytes())</code>)</td>
-<td><strong>8.1M</strong> iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.put_slice(.to_be_bytes())</code>)</td>
-<td>7.9M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.put_slice(.to_le_bytes())</code>)</td>
-<td><strong>8.3M</strong> iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.put_u64(n)</code>)</td>
-<td>7.7M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.extend(.to_ne_bytes())</code>)</td>
-<td>4.1M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.extend(.to_be_bytes())</code>)</td>
-<td>4.1M iterations</td>
-</tr>
-<tr>
-<td>wyrand(with vec, <code>.extend(.to_le_bytes())</code>)</td>
-<td>4.1M iterations</td>
-</tr>
-</tbody>
-</table>
+<td>getrandom</td><td>6.3M iterations</td></tr><tr>
+<td>wyrand</td><td><strong>9.5M</strong> iterations</td></tr><tr>
+<td>wyrand(with offset)</td><td>9.5M iterations</td></tr><tr>
+<td>getrandom(with bytes, <code>.put_slice(&[u8])</code>)</td><td>5.4M iterations</td></tr><tr>
+<td>wyrand(with bytes, <code>.put_slice(&[u8])</code>)</td><td>4.8M iterations</td></tr><tr>
+<td>wyrand(with bytes, <code>.put_u64(n)</code>)</td><td>3.4M iterations</td></tr><tr>
+<td>getrandom(with vec, <code>.put_slice(&[u8])</code>)</td><td>6.0M iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.put_slice(.to_ne_bytes())</code>)</td><td><strong>8.1M</strong> iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.put_slice(.to_be_bytes())</code>)</td><td>7.9M iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.put_slice(.to_le_bytes())</code>)</td><td><strong>8.3M</strong> iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.put_u64(n)</code>)</td><td>7.7M iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.extend(.to_ne_bytes())</code>)</td><td>4.1M iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.extend(.to_be_bytes())</code>)</td><td>4.1M iterations</td></tr><tr>
+<td>wyrand(with vec, <code>.extend(.to_le_bytes())</code>)</td><td>4.1M iterations</td></tr></tbody></table><ul>
+<li>With offset is not provide significant difference</li><li>Using <a href=https://github.com/tokio-rs/bytes>Bytes</a> with [u8] array insertion is not good idea to provide random bytes</li><li><a href=https://github.com/tokio-rs/bytes>Bytes</a> is slower than <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html>std::vec::Vec</a>.</li><li>Using <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html>std::vec::Vec</a> with <code>.put_slice()</code> provide acceptable performance</li><li><code>wyrand</code> with <code>std::vec::Vec</code> and <code>.put_slice()</code>is best score.</li><li>Casting <code>u64</code> into <code>&[u8]</code> by <code>to_ne_bytes()</code>, <code>to_be_bytes()</code>, and <code>to_le_bytes()</code>.
 <ul>
-<li>With offset is not provide significant difference</li>
-<li>Using <a href=https://github.com/tokio-rs/bytes>Bytes</a> with [u8] array insertion is not good idea to provide random bytes</li>
-<li><a href=https://github.com/tokio-rs/bytes>Bytes</a> is slower than <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html>std::vec::Vec</a>.</li>
-<li>Using <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html>std::vec::Vec</a> with <code>.put_slice()</code> provide acceptable performance</li>
-<li><code>wyrand</code> with <code>std::vec::Vec</code> and <code>.put_slice()</code>is best score.</li>
-<li>Casting <code>u64</code> into <code>&[u8]</code> by <code>to_ne_bytes()</code>, <code>to_be_bytes()</code>, and <code>to_le_bytes()</code>.
+<li><code>to_be_bytes()</code> was worst in every trials.</li><li><code>to_ne_bytes()</code> and <code>to_le_bytes()</code> are simillar, but in my test enviroment(AMD Ryzen 7 4800HS no throttling configed labtop) <code>to_le_bytes()</code> is better.
 <ul>
-<li><code>to_be_bytes()</code> was worst in every trials.</li>
-<li><code>to_ne_bytes()</code> and <code>to_le_bytes()</code> are simillar, but in my test enviroment(AMD Ryzen 7 4800HS no throttling configed labtop) <code>to_le_bytes()</code> is better.
-<ul>
-<li>maybe <code>ne</code>(native endian) has little overhead for determine which to use.</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id=c2s2>C2/S2</h2>
-<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+<li>maybe <code>ne</code>(native endian) has little overhead for determine which to use.</li></ul></li></ul></li></ul><h2 id=c2s2>C2/S2</h2><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
 (draw-column-headers)
-(draw-box &quot;time&quot; {:span 4})
-(draw-box &quot;time2&quot; {:span 4})
-(draw-gap &quot;random bytes (1528 bytes)&quot;)
+(draw-box &#34;time&#34; {:span 4})
+(draw-box &#34;time2&#34; {:span 4})
+(draw-gap &#34;random bytes (1528 bytes)&#34;)
 (draw-bottom)
 </code></pre><ul>
 <li>
-<p>Time</p>
-<blockquote>
-<p>the timestamp sent by the peer in S1 (for C2) or C1 (for S2).</p>
-</blockquote>
-</li>
-<li>
-<p>Time2</p>
-<blockquote>
-<p>the timestamp at which the previous packet(s1 or c1) sent by the peer was read.</p>
-</blockquote>
-</li>
-<li>
-<p>Random bytes</p>
-<ul>
-<li>Echo C1/S1&rsquo;s Random bytes</li>
-</ul>
-</li>
-<li>
-<p>Echo Time and Random bytes</p>
-</li>
-<li>
-<p>Time and Time2 is used to estimate RTT(Round Trip Time)</p>
-</li>
-</ul>
-<h1 id=discussion>Discussion</h1>
-<ul>
+<p>Time</p><blockquote>
+<p>the timestamp sent by the peer in S1 (for C2) or C1 (for S2).</p></blockquote></li><li>
+<p>Time2</p><blockquote>
+<p>the timestamp at which the previous packet(s1 or c1) sent by the peer was read.</p></blockquote></li><li>
+<p>Random bytes</p><ul>
+<li>Echo C1/S1&rsquo;s Random bytes</li></ul></li><li>
+<p>Echo Time and Random bytes</p></li><li>
+<p>Time and Time2 is used to estimate RTT(Round Trip Time)</p></li></ul><h1 id=discussion>Discussion</h1><ul>
 <li>Well-known RTMP implementation is <a href=https://github.com/ossrs/librtmp>librtmp</a>. but it is different with <a href=https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf>RTMP 1.0 Specification</a>
 <ul>
-<li>There is so many undocumented specifications exist.</li>
-<li>In <a href=https://github.com/ossrs/librtmp>librtmp</a>, time2 response is dead code. player version checking by C1&rsquo;s zero.(That defined <code>MUST be all 0s.</code> in specification)</li>
-</ul>
-</li>
-</ul>
-<p>Implemented codes pushed <a href=https://github.com/LMinJae/rtmp-rs>into my github</a></p>
-<h1 id=references>References</h1>
-<ul>
-<li><a href=https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf>RTMP 1.0 Specification</a></li>
-</ul>
-</div>
-<div class=post-footer>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//mjlee.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-</article>
-</main>
-</body>
-</html>
+<li>There is so many undocumented specifications exist.</li><li>In <a href=https://github.com/ossrs/librtmp>librtmp</a>, time2 response is dead code. player version checking by C1&rsquo;s zero.(That defined <code>MUST be all 0s.</code> in specification)</li></ul></li></ul><p>Implemented codes pushed <a href=https://github.com/LMinJae/rtmp-rs>into my github</a></p><h1 id=references>References</h1><ul>
+<li><a href=https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf>RTMP 1.0 Specification</a></li></ul></div><div class=post-footer>
+<div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mjlee.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div></article></main></body></html>
