@@ -1,0 +1,68 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>Current status // Min-Jae Lee</title><link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.93.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.4a7ec8660f9a44b08c4da97c5f2e31b1192df1d4d0322e65c0dbbc6ecb1b863f.css>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8E53QTVV68"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-8E53QTVV68",{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Current status">
+<meta name=twitter:description content="RTMP is FLV based, so RTMP is best performance on output FLV. (Just write, without modification) As I think, In Low-latency scenario, RTMP=>FLV=>fMP4 has overhead. How about RTMP directly push fMP4 to CDN?  Structure of fMP4   ISOBMFF is documented as [ISO/IEC 14496-12].
+  Mandatory structure is ftyp and moov, that can be found in [Table 1 — Box types, structure, and cross-reference (Informative)].
+  Fragment need pair of moof and mdat.">
+<meta property="og:title" content="Current status">
+<meta property="og:description" content="RTMP is FLV based, so RTMP is best performance on output FLV. (Just write, without modification) As I think, In Low-latency scenario, RTMP=>FLV=>fMP4 has overhead. How about RTMP directly push fMP4 to CDN?  Structure of fMP4   ISOBMFF is documented as [ISO/IEC 14496-12].
+  Mandatory structure is ftyp and moov, that can be found in [Table 1 — Box types, structure, and cross-reference (Informative)].
+  Fragment need pair of moof and mdat.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/20220323-current-status/"><meta property="article:section" content="live-streaming">
+<meta property="article:published_time" content="2022-03-23T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-03-23T00:00:00+00:00">
+</head><body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1><nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+-
+<a class=app-header-menu-item href=/tags/>Tags</a>
+</nav><p>Software Engineer</p><div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
+</div></header><main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Current status</h1><div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Mar 23, 2022
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+2 min read
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+<a class=tag href=https://blog.mjlee.ga/tags/development/>Development</a>
+<a class=tag href=https://blog.mjlee.ga/tags/live-streaming/>Live-Streaming</a>
+<a class=tag href=https://blog.mjlee.ga/tags/issue/>Issue</a>
+</div></div></header><div class=post-content>
+<ul>
+<li>RTMP is FLV based, so RTMP is best performance on output FLV. (Just write, without modification)</li><li>As I think, In Low-latency scenario, <code>RTMP=>FLV=>fMP4</code> has overhead. How about RTMP directly push fMP4 to CDN?</li></ul><h1 id=structure-of-fmp4>Structure of fMP4</h1><ul>
+<li>
+<p>ISOBMFF is documented as [ISO/IEC 14496-12].</p></li><li>
+<p>Mandatory structure is <code>ftyp</code> and <code>moov</code>, that can be found in [Table 1 — Box types, structure, and cross-reference (Informative)].</p></li><li>
+<p>Fragment need pair of <code>moof</code> and <code>mdat</code>.</p></li><li>
+<p><code>ftyp</code> and <code>moov</code> is commonly grouping and saying initial segment.</p></li><li>
+<p><code>moof</code> and <code>mdat</code> contain real video/audio data contain.</p></li><li>
+<p><code>moof</code> has offset of data that pointed <code>mdat</code>&rsquo;s payload.</p></li><li>
+<p><code>tfhd</code> in the <code>moof</code> has base-data-offset that used to calculate data offset.</p></li><li>
+<p><code>tfhd</code> has a flag named <code>default‐base‐is‐moof</code>, that means base-data-offset = 0 meaning <code>moof</code> box&rsquo;s start offset.</p></li></ul><h1 id=current-status>Current status</h1><ul>
+<li>Basic fMP4 segment generation and HLS metadata creation work</li><li>Stream by <code>ffmpeg -re -i &lt;filename> -vcodec copy -acodec copy -f flv rtmp://&lt;address>:&lt;port>/&lt;app>/&lt;stream key></code> works well</li><li>Stream by OBS have a problem, no sound playable. OBS&rsquo;s setting is correct that I checked by Recording.
+<ul>
+<li>Maybe need to check AudioSpecificConfig related? Currently just skipped.</li></ul></li></ul><h1 id=conclusion>Conclusion</h1><ul>
+<li>I pivoted from <code>RTMP=>FLV</code> to <code>RTMP=>fMP4</code>, due to it seems overhead, no benefit, to minimize implementation range.</li><li>Write ISOBMFF I/O library that specifically support playable fragmented mp4, that support <code>ftyp</code>, <code>moov</code> and <code>moof</code>.</li><li>Currently has some unknown bugs, like non playable audio in specific scenario.</li></ul><h1 id=to-do>To do</h1><ul>
+<li>Fix audio play problem.</li><li>Benchmark with <a href=https://github.com/arut/nginx-rtmp-module>nginx-rtmp-module</a></li><li>Implement routing app(Data stream in-house passthough system?)</li><li>Implement stream key management (Implement AP system? transaction(ACID)?)</li></ul></div><div class=post-footer>
+<div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mjlee.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div></article></main></body></html>
