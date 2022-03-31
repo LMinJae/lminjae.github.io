@@ -1,0 +1,802 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>RTMP // Min-Jae Lee</title><link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.93.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.4a7ec8660f9a44b08c4da97c5f2e31b1192df1d4d0322e65c0dbbc6ecb1b863f.css>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8E53QTVV68"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-8E53QTVV68",{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="RTMP">
+<meta name=twitter:description content="Adobe&rsquo; Real-Time Message Protocol Introduction Summary of RTMP Protocol, consider production ready about live streaming service. From librtmp(within ffmpeg; used in obs studio), obs studio&rsquo;s implementation.
+Terminology The key words &ldquo;MUST&rdquo;, &ldquo;MUST NOT&rdquo;, &ldquo;REQUIRED&rdquo;, &ldquo;SHALL&rdquo;, &ldquo;SHALL NOT&rdquo;, &ldquo;SHOULD&rdquo;, &ldquo;SHOULD NOT&rdquo;, &ldquo;RECOMMENDED&rdquo;, &ldquo;NOT RECOMMENDED&rdquo;, &ldquo;MAY&rdquo;, and &ldquo;OPTIONAL&rdquo; in this document are to be interpreted as described in RFC2119.
+Syntax Handshake Handshake Phase Version (IVersion, RVersion) RTMP protocol version negotiation.
+  (def boxes-per-row 4) (draw-column-headers) (draw-box &#34;version&#34; {:span 4}) struct hversion_t { 	uint8_t version; } : 8; version:	Initiator send supported protocol version information.">
+<meta property="og:title" content="RTMP">
+<meta property="og:description" content="Adobe&rsquo; Real-Time Message Protocol Introduction Summary of RTMP Protocol, consider production ready about live streaming service. From librtmp(within ffmpeg; used in obs studio), obs studio&rsquo;s implementation.
+Terminology The key words &ldquo;MUST&rdquo;, &ldquo;MUST NOT&rdquo;, &ldquo;REQUIRED&rdquo;, &ldquo;SHALL&rdquo;, &ldquo;SHALL NOT&rdquo;, &ldquo;SHOULD&rdquo;, &ldquo;SHOULD NOT&rdquo;, &ldquo;RECOMMENDED&rdquo;, &ldquo;NOT RECOMMENDED&rdquo;, &ldquo;MAY&rdquo;, and &ldquo;OPTIONAL&rdquo; in this document are to be interpreted as described in RFC2119.
+Syntax Handshake Handshake Phase Version (IVersion, RVersion) RTMP protocol version negotiation.
+  (def boxes-per-row 4) (draw-column-headers) (draw-box &#34;version&#34; {:span 4}) struct hversion_t { 	uint8_t version; } : 8; version:	Initiator send supported protocol version information.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/wiki/rtmp/"><meta property="article:section" content="wiki">
+<meta property="article:published_time" content="2022-03-31T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-03-31T00:00:00+00:00">
+</head><body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1><nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+-
+<a class=app-header-menu-item href=/tags/>Tags</a>
+</nav><p>Software Engineer</p><div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
+</div></header><main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>RTMP</h1><div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Mar 31, 2022
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+16 min read
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+<a class=tag href=https://blog.mjlee.ga/tags/rtmp/>RTMP</a>
+</div></div></header><div class=post-content>
+<h1 id=adobe-real-time-message-protocol>Adobe&rsquo; Real-Time Message Protocol</h1><h1 id=introduction>Introduction</h1><p>Summary of RTMP Protocol, consider production ready about live streaming service.
+From librtmp(within ffmpeg; used in obs studio), obs studio&rsquo;s implementation.</p><h2 id=terminology>Terminology</h2><p>The key words &ldquo;MUST&rdquo;, &ldquo;MUST NOT&rdquo;, &ldquo;REQUIRED&rdquo;, &ldquo;SHALL&rdquo;, &ldquo;SHALL NOT&rdquo;, &ldquo;SHOULD&rdquo;, &ldquo;SHOULD NOT&rdquo;, &ldquo;RECOMMENDED&rdquo;, &ldquo;NOT RECOMMENDED&rdquo;, &ldquo;MAY&rdquo;, and &ldquo;OPTIONAL&rdquo; in this document are to be interpreted as described in <a href=https://datatracker.ietf.org/doc/html/rfc2119>RFC2119</a>.</p><h1 id=syntax>Syntax</h1><h2 id=handshake>Handshake</h2><h3 id=handshake-phase-version-iversion-rversion>Handshake Phase Version (IVersion, RVersion)</h3><p>RTMP protocol version negotiation.</p><link rel=stylesheet href=/diagram.css>
+<script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
+<script src=/bytefield.js></script>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;version&#34; {:span 4})
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>struct</span> hversion_t
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint8_t</span> version;
+</span></span><span style=display:flex><span>} <span style=color:#f92672>:</span> <span style=color:#ae81ff>8</span>;
+</span></span></code></pre></div><p>version: Initiator send supported protocol version information.
+A responder that does not recongnize the initiator&rsquo;s request vertion SHOULD respond with 3(unencrypted).
+The initiator MAY choose to degrade to version 3, or to abandon the handshake.</p><p>version = $\begin{cases}\texttt{0x03}&\texttt{if unencrypted}\\texttt{0x06}&\texttt{if encrypted}\end{cases}$</p><h3 id=handshake-phase-hello-ihello-rhello>Handshake Phase Hello (IHello, RHello)</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &#34;time&#34; {:span 4})
+(draw-box &#34;version&#34; {:span 4})
+(draw-gap &#34;payload (1528 bytes)&#34;)
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>struct</span> hhello_t
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint32_t</span> time;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint32_t</span> version;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint8_t</span> payload[<span style=color:#ae81ff>1528</span>];
+</span></span><span style=display:flex><span>} <span style=color:#f92672>:</span> <span style=color:#ae81ff>1536</span><span style=color:#f92672>*</span><span style=color:#ae81ff>8</span>;
+</span></span></code></pre></div><p>time: Timestamp, which SHOULD 32-bit system time(epoch), network byte ordered.
+MAY be 0, or some arbitrary value.</p><p>version: Flash Media Server Version. (ex. 0x09_00_7C_02: 9.0.124.2)
+On sent by a initiator, MUST be all 0s.</p><p>payload: SHOULD send something sufficiently random.
+no need cryptographically-secure randomness.
+OPTIONAL include <a href=https://datatracker.ietf.org/doc/html/rfc4634>HMAC-SHA256</a> digest explained at <a href=#appendix_a>Appendix A: RTMPE</a>.</p><p>Note:
+If HVersion negotiated as encrypted version on both side, than payload MUST contain <a href=https://datatracker.ietf.org/doc/html/rfc2631>Diffie-Hellman public key</a>.
+that vertify by <a href=https://datatracker.ietf.org/doc/html/rfc4634>HMAC-SHA256</a> and apply encryption on chunk stream by ARC4.</p><p>Else, on unencrypted, OPTIONAL contain <a href=https://datatracker.ietf.org/doc/html/rfc4634>HMAC-SHA256</a>.
+<del>
+due to support AVC video stream.
+(Some articles explain that fail <a href=https://datatracker.ietf.org/doc/html/rfc4634>HMAC-SHA256</a> occur video stream drop)
+</del></p><h3 id=handshake-phase-echo-iecho-recho>Handshake Phase Echo (IEcho, REcho)</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &#34;time&#34; {:span 4})
+(draw-box &#34;version&#34; {:span 4})
+(draw-gap &#34;payload (1528 bytes)&#34;)
+(draw-bottom)
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>struct</span> hecho_t
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint32_t</span> time;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint32_t</span> version;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>uint8_t</span> payload[<span style=color:#ae81ff>1528</span>];
+</span></span><span style=display:flex><span>} <span style=color:#f92672>:</span> <span style=color:#ae81ff>1536</span><span style=color:#f92672>*</span><span style=color:#ae81ff>8</span>;
+</span></span></code></pre></div><p>time: MUST contain the timestamp, which received from IHello or RHello.
+version: MUST contain the version, which received from IHello or RHello.
+payload: contain the payload, which received from IHello or RHello.</p><p>Note:
+In <a href=https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf>RTMP 1.0 Specification</a>, version is defined as time2 that timestamp at receive IHello or RHello.
+But, In encrypted RTMP(<a href=http://lkcl.net/rtmp/RTMPE.txt>RTMPE</a>), last 4 bytes are using for DHPublicKey vertification.</p><h2 id=chunks>Chunks</h2><p>Basic HeaderMessage HeaderExtended Timestamp \Payload</p><h3 id=basic-header>Basic Header</h3><script src=https://cdnjs.cloudflare.com/ajax/libs/wavedrom/2.6.8/skins/default.js type=text/javascript></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/wavedrom/2.6.8/wavedrom.min.js type=text/javascript></script>
+<script src=/wavedrom.js type=text/javascript></script>
+<pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 2, &#34;name&#34;: &#34;fmt&#34;},
+  {&#34;bits&#34;: 6, &#34;name&#34;: &#34;cs_id&#34;},
+  {&#34;bits&#34;: 16, &#34;name&#34;: &#34;&#34;, type: 2},
+], config: {vflip: true, bits: 24}}
+</code></pre><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 2, &#34;name&#34;: &#34;fmt&#34;},
+  {&#34;bits&#34;: 6, &#34;name&#34;: 0},
+  {&#34;bits&#34;: 8, &#34;name&#34;: &#34;cs_id - 64&#34;},
+  {&#34;bits&#34;: 8, &#34;name&#34;: &#34;&#34;, type: 2},
+], config: {vflip: true, bits: 24}}
+</code></pre><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 2, &#34;name&#34;: &#34;fmt&#34;},
+  {&#34;bits&#34;: 6, &#34;name&#34;: 63},
+  {&#34;bits&#34;: 16, &#34;name&#34;: &#34;cs_id - 64&#34;},
+], config: {vflip: true, bits: 24}}
+</code></pre><ul>
+<li>cs_id
+<ul>
+<li>librtmp
+<ul>
+<li>packet.m_nChannel = 0x02; /* control channel (invoke) */</li><li>packet.m_nChannel = 0x03; /* control channel (invoke) */</li><li>packet.m_nChannel = 0x04; /* source channel (invoke) */</li><li>packet.m_nChannel = 0x08; /* video channel */</li></ul></li></ul></li></ul><h3 id=message-header>Message Header</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def box-width 160)
+(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;timestamp&#34; {:span 3})
+(draw-box &#34;message length&#34; {:span 1})
+(draw-box &#34;message length&#34; {:span 2})
+(draw-box &#34;message type id&#34; {:span 1})
+(draw-box &#34;message stream id&#34; {:span 1})
+(draw-box &#34;message stream id&#34; {:span 3})
+</code></pre><h2 id=message>Message</h2><h3 id=set-chunk-size-0x01>Set Chunk Size (0x01)</h3><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 1, &#34;name&#34;: 10},
+  {&#34;bits&#34;: 31, &#34;name&#34;: &#34;chunk size&#34;},
+], config: {vflip: true}}
+</code></pre><h3 id=abort-0x02>Abort (0x02)</h3><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 32, &#34;name&#34;: &#34;chunk stream id&#34;},
+], config: {vflip: true}}
+</code></pre><h3 id=acknowledgement-0x03>Acknowledgement (0x03)</h3><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 32, &#34;name&#34;: &#34;sequence number&#34;},
+], config: {vflip: true}}
+</code></pre><h3 id=window-acknowledgement-size-0x05>Window Acknowledgement Size (0x05)</h3><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 32, &#34;name&#34;: &#34;Acknowledgement Window size&#34;},
+], config: {vflip: true}}
+</code></pre><h3 id=set-peer-bandwidth-0x06>Set Peer Bandwidth (0x06)</h3><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 32, &#34;name&#34;: &#34;Acknowledgement Window size&#34;},
+], config: {vflip: true}}
+</code></pre><pre tabindex=0><code class=language-wavedrom data-lang=wavedrom>{reg: [
+  {&#34;bits&#34;: 8, &#34;name&#34;: &#34;Limit Type&#34;},
+], config: {vflip: true}}
+</code></pre><h3 id=user-control-0x04>User Control (0x04)</h3><h4 id=stream-begin-0x0000>Stream Begin (=0x0000)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;stream id&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=stream-eof-0x0001>Stream EOF (=0x0001)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;stream id&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=stream-dry-0x0002>Stream Dry (=0x0002)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;stream id&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=set-buffer-length-0x0003>Set Buffer Length (=0x0003)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &#34;stream id&#34; {:span 4})
+(draw-box &#34;buffer length&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=stream-is-recorded-0x0004>Stream Is Recorded (=0x0004)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;stream id&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=ping-request-0x0006>Ping Request (=0x0006)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;timestamp&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=ping-response-0x0007>Ping Response (=0x0007)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;timestamp&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=stream-buffer-empty-0x001f>Stream Buffer Empty (=0x001F)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;UNKNOWN&#34; {:span 4})
+(draw-bottom)
+</code></pre><p>in <a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/librtmp/rtmp.c#L3643-L3701>librtmp from OBS studio</a></p><h4 id=stream-buffer-ready-0x0020>Stream Buffer Ready (=0x0020)</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;UNKNOWN&#34; {:span 4})
+(draw-bottom)
+</code></pre><h4 id=swfverification-ping-request-0x001a>SWFVerification Ping Request (=0x001A)</h4><p><code>UNKNOWN</code></p><p>in <a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/librtmp/rtmp.c#L3711-L3739>librtmp from OBS studio</a></p><h4 id=swfverification-ping-response-0x001b>SWFVerification Ping Response (=0x001B)</h4><p><code>UNKNOWN</code></p><h2 id=messages>Messages</h2><h3 id=command-0x14-0x11>Command (0x14, 0x11)</h3><p>AMF3(0x11) is not suported by librtmp. It means not supported by FFMPEG.</p><h3 id=data-0x12-0x0f>Data (0x12, 0x0F)</h3><p>Define at FLV Data tags.</p><p>AMF3(0x0F) is not suported by librtmp. It means not supported by FFMPEG.</p><p>AMF0 Object, that end with ObjectEnd(0x09).</p><p>Data is structed as (String, String, ECMAArray)</p><h4 id=setdataframe-onmetadata>@setDataFrame, onMetaData</h4><p><code>onMetaData</code> can be found in FLV&rsquo;s specification, that defined as <code>NetStream.onMetaData</code> in ActionScript.</p><ul>
+<li>width
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>height
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>vedeodatarate
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>framerate
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>videocodecid
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>audiosamplerate
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>audiosamplesize
+<ul>
+<li>Type: Double(64-bits)</li></ul></li><li>stereo
+<ul>
+<li>Type: Boolean</li></ul></li><li>audiocodecid
+<ul>
+<li>Type: Double(64-bits)</li></ul></li></ul><blockquote>
+<p>FFMPEG don&rsquo;t send unknown value.</p></blockquote><blockquote>
+<p>In AAC, MUST use audiosamplerate, audiosamplesize.
+Don&rsquo;t trust AudioSpecificConfig or Audio tags information</p></blockquote><h3 id=shared-object-0x13-0x10>Shared Object (0x13, 0x10)</h3><p>Not supported by librtmp. It means not supported by FFMPEG.
+And, I can&rsquo;t found real structure of this.</p><ul>
+<li>Broadcast a Shared Object Message
+<script src=https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js></script>
+<script src=/mermaid.js></script>
+</li></ul><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Note over Initiator, Responder: Handshaking done
+	
+    Initiator-&gt;&gt;Responder: Shared Object Event(Use)
+    Responder-&gt;&gt;Initiator: Shared Object Event(Use Success, Clear)
+	
+    Initiator-&gt;&gt;Responder: Shared Object Event(Request Change)
+    Responder-&gt;&gt;Initiator: Shared Object Event(Success)
+	
+    Initiator-&gt;&gt;Responder: Shared Object Event(Send Message)
+    Responder-&gt;&gt;Initiator: Shared Object Event(Send Message)
+</code></pre><h3 id=audio-0x08>Audio (0x08)</h3><p>Define at FLV Audio tags.</p><h4 id=audiodata>AUDIODATA</h4><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;SoundFormat&#34; {:span 4})
+(draw-box &#34;SoundRate&#34; {:span 2})
+(draw-box &#34;SoundSize&#34; {:span 1})
+(draw-box &#34;SoundType&#34; {:span 1})
+(draw-gap &#34;SoundData&#34;)
+(draw-bottom)
+</code></pre><h5 id=soundformat>SoundFormat</h5><p>0 = Linear PCM, platform endian
+1 = ADPCM
+2 = MP3
+4 = Linear PCM, little endian
+5 = Nellymoser 8-kHz mono
+6 = Nellymoser
+10 = AAC
+11 = Speex</p><h5 id=soundrate>SoundRate</h5><p>0 = 5.5 kHz
+1 = 11 kHz
+2 = 22 kHz
+3 = 44 kHz</p><p>For AAC: always 3</p><h5 id=soundsize>SoundSize</h5><p>0 = 8 Bits
+1 = 16 Bits</p><p>Only for uncompressed formats</p><p>Compressed formats alyaws 16 bits</p><h5 id=soundtype>SoundType</h5><p>0 = Mono
+1 = Stereo</p><p>For Nellymouser: Always 0</p><p>For AAC: Always 1</p><h5 id=sounddata>SoundData</h5><h6 id=aacaudiodata>AACAUDIODATA</h6><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;AACPacketType&#34; {:span 1})
+(draw-gap &#34;Data&#34;)
+(draw-bottom)
+</code></pre><ul>
+<li>AACPacketType
+<ul>
+<li>0 = AAC sequence header</li><li>1 = AAC raw
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css integrity=sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js integrity=sha384-VQ8d8WVFw0yHhCk5E8I86oOhv48xLpnDZx5T9GogA/Y84DcCKWXDmSDfn13bzFZY crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous></script>
+<script src=/katex.js></script>
+</li></ul></li><li>Data = $\begin{cases}\text{AudioSpecificConfig}&\text{\ \ \ \ \ \ \ if AACPacketType} == 0\\text{Raw AAC Frame data}&\text{else if AACPacketType} == 1\end{cases}$</li></ul><h3 id=video-0x09>Video (0x09)</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;FrameType&#34; {:span 4})
+(draw-box &#34;CodecID&#34; {:span 4})
+(draw-gap &#34;VideoData&#34;)
+(draw-bottom)
+</code></pre><h4 id=frametype>FrameType</h4><p>1 = Key-frame</p><p>2 = Inter-frame</p><p>5 = video info/command frame</p><p>For H.263, 3 = Disposable inter-frame</p><h4 id=codecid>CodecID</h4><p>2 = Sorenson H.263</p><p>3 = Screen video</p><p>4 = On2 VP6</p><p>5 = On2 VP6 with alpha chennel</p><p>6 = Screen video version 2</p><p>7 = AVC</p><h4 id=videodata>VideoData</h4><p>Define at FLV Video tags.</p><h5 id=avcvideopacket>AVCVIDEOPACKET</h5><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;AVCPacketType&#34; {:span 1})
+(draw-box &#34;CompositionTime&#34; {:span 3})
+(draw-gap &#34;Data&#34;)
+(draw-bottom)
+</code></pre><h6 id=avcpackettype>AVCPacketType</h6><p>0 = AVC sequence header (avc config)
+1 = AVC NALU
+2 = AVC end of sequence</p><h3 id=aggregate-0x16>Aggregate (0x16)</h3><h3 id=define-on-obs-studio-silent-reconnect-0x20httpsgithubcomobsprojectobs-studioblobaf6844f5c24d77ca7b4b1bcc000504d8e693a563pluginsobs-outputsrtmp-streamcl276><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L276>(Define on OBS Studio) Silent Reconnect (0x20)</a></h3><h2 id=commands>Commands</h2><h3 id=netcommand>NetCommand</h3><p>Stream ID: 0</p><h4 id=connect>(connect)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>connect</td><td>Command</td></tr><tr>
+<td>Number</td><td>1</td><td></td></tr><tr>
+<td>Object</td><td>-</td><td>Command info</td></tr><tr>
+<td>Object</td><td>-</td><td>Optionalarguments</td></tr></tbody></table><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Note over Initiator, Responder: Handshaking done
+	
+    Initiator-&gt;&gt;Responder: Command(connect)
+    Responder-&gt;&gt;Initiator: Window Acknowledgement Size
+    Responder-&gt;&gt;Initiator: Set Peer Bandwidth
+    Initiator-&gt;&gt;Responder: Window Acknowledgement Size
+    Responder-&gt;&gt;Initiator: User Control(Stream Begin)
+    Responder-&gt;&gt;Initiator: Command(_result(connect))
+</code></pre><h4 id=call>(Call)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>Call</td><td>Command</td></tr><tr>
+<td>Number</td><td>-</td><td>Transaction ID</td></tr><tr>
+<td>Object</td><td>-</td><td>Command info</td></tr><tr>
+<td>Object</td><td>-</td><td>Optionalarguments</td></tr></tbody></table><p>Remote Procedure Call</p><h4 id=createstream>(createStream)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>createStream</td><td>Command</td></tr><tr>
+<td>Number</td><td>-</td><td>Transaction ID</td></tr><tr>
+<td>Object or Null</td><td>-</td><td>command info</td></tr></tbody></table><h3 id=netstream>NetStream</h3><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>onStatus</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Object</td><td>-</td><td>String level (one of &ldquo;warning&rdquo;, &ldquo;status&rdquo;, or &ldquo;error&rdquo;)<br>String code<br>String description</td></tr></tbody></table><h4 id=play>(play)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>play</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>String</td><td>-</td><td>Stream Name</td></tr><tr>
+<td>Number</td><td>-</td><td>Start</td></tr><tr>
+<td>Number</td><td>-</td><td>Duration</td></tr><tr>
+<td>Boolean</td><td>-</td><td>Flush previous playlist</td></tr></tbody></table><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Note over Initiator, Responder: Handshaking and Application connect done
+	
+    Initiator-&gt;&gt;Responder: Command(createStream)
+    Responder-&gt;&gt;Initiator: Command(_result(createStream))
+	
+    Initiator-&gt;&gt;Responder: Command(play)
+    Responder-&gt;&gt;Initiator: Set Chunk Size
+    Responder-&gt;&gt;Initiator: User Control(Stream Is Recorded)
+    Responder-&gt;&gt;Initiator: User Control(Stream Begin)
+    Responder-&gt;&gt;Initiator: Command(onStatus(play reset))
+    Responder-&gt;&gt;Initiator: Command(onStatus(play start))
+    Responder-&gt;&gt;Initiator: Audio
+    Responder-&gt;&gt;Initiator: Video
+    Note over Initiator, Responder: Until the stream is complete
+</code></pre><h4 id=play2>(play2)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>play2</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Object</td><td>-</td><td>Parameters</td></tr></tbody></table><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Note over Initiator, Responder: Handshaking and Application connect done
+	
+    Initiator-&gt;&gt;Responder: Command(createStream)
+    Responder-&gt;&gt;Initiator: Command(_result(createStream))
+	
+    Initiator-&gt;&gt;Responder: Command(play)
+    Responder-&gt;&gt;Initiator: Set Chunk Size
+    Responder-&gt;&gt;Initiator: User Control(Stream Is Recorded)
+    Responder-&gt;&gt;Initiator: User Control(Stream Begin)
+    Responder-&gt;&gt;Initiator: Command(onStatus(play reset))
+    Responder-&gt;&gt;Initiator: Command(onStatus(play start))
+    Responder-&gt;&gt;Initiator: Audio
+    Responder-&gt;&gt;Initiator: Video
+    Initiator-&gt;&gt;Responder: Command(play2)
+    Responder-&gt;&gt;Initiator: Audio (new rate)
+    Responder-&gt;&gt;Initiator: Video (new rate)
+    Note over Initiator, Responder: Until the stream is complete
+</code></pre><h4 id=deletestream>(deleteStream)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>deleteStream</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Number</td><td>-</td><td>Stream ID</td></tr></tbody></table><h4 id=receiveaudio>(receiveAudio)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>receiveAudio</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Boolean</td><td>-</td><td>Receive audeo</td></tr></tbody></table><h4 id=receivevideo>(receiveVideo)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>receiveVideo</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Boolean</td><td>-</td><td>Receive video</td></tr></tbody></table><h4 id=publish>(publish)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>publish</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>String</td><td>-</td><td>Name</td></tr><tr>
+<td>String</td><td>-</td><td><strong>Type</strong><br><em>record</em>: The stream is published and the data is recorded to a new file. The file is stored on the server in a subdirectory within the directory that contains the server application. If the file already exists, it is overwritten.<br><em>append</em>: The stream is published and the data is appended to a file. If no fileis found, it is created.<br><em>live</em>: Live data is published without recording it in a file.</td></tr></tbody></table><ul>
+<li>Publish Metadata from Recorded Stream</li></ul><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Note over Initiator, Responder: Handshaking and Application connect done
+	
+    Initiator-&gt;&gt;Responder: Command(createStream)
+    Responder-&gt;&gt;Initiator: Command(_result(createStream))
+	
+    Initiator-&gt;&gt;Responder: Command(publish)
+    Responder-&gt;&gt;Initiator: User Control(Stream Begin)
+    Initiator-&gt;&gt;Responder: Data(Metadata)
+</code></pre><ul>
+<li>Publish Recorded Video</li></ul><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Note over Initiator, Responder: Publish Metadata from Recorded Stream done
+	
+    Initiator-&gt;&gt;Responder: Audio
+    Initiator-&gt;&gt;Responder: Set Chunk Size
+    Responder-&gt;&gt;Initiator: Command(_result(publish))
+    Initiator-&gt;&gt;Responder: Video
+    Note over Initiator, Responder: Until the stream is complete
+</code></pre><h4 id=seek>(seek)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>seek</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Number</td><td>-</td><td>Stream timestamp in milliSeconds</td></tr></tbody></table><h4 id=pause>(pause)</h4><table>
+<thead>
+<tr>
+<th>Type</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr>
+<td>String</td><td>pause</td><td>Command</td></tr><tr>
+<td>Number</td><td>0</td><td></td></tr><tr>
+<td>Null</td><td>-</td><td></td></tr><tr>
+<td>Boolean</td><td>-</td><td>Pause flag</td></tr><tr>
+<td>Number</td><td>-</td><td>Stream timestamp in milliSeconds</td></tr></tbody></table><h1 id=operation>Operation</h1><h2 id=overview>Overview</h2><h2 id=packet-multiplex>Packet Multiplex</h2><h2 id=packet-fragmentation>Packet Fragmentation</h2><h3 id=startup>Startup</h3><h4 id=handshake-1>Handshake</h4><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+    Initiator-&gt;&gt;Responder: IVersion(Version=3)
+    Responder-&gt;&gt;Initiator: RVersion(Version=3)/RHello(Timestamp=RNow(), Bytes)
+    Initiator-&gt;&gt;Responder: IHello(Timestamp=INow(), Bytes)
+    Responder-&gt;&gt;Initiator: REcho
+    Initiator-&gt;&gt;Responder: IEcho
+</code></pre><h5 id=initiator>Initiator</h5><p>OBS studio: publish live stream</p><pre tabindex=0><code class=language-mermaid data-lang=mermaid>sequenceDiagram
+	Note over Initiator, Responder: Handshaking done
+
+	alt OBS::try_connect
+		alt librtmp::RTMP_Connect
+			alt librtmp::RTMP_Connect1
+				alt librtmp::SendConnectPacket
+					Initiator-&gt;&gt;Responder: Set Chunk Size
+					Initiator-&gt;&gt;Responder: Command(connect)
+				end
+			end
+		end
+		alt librtmp::RTMP_ConnectStream
+			alt librtmp::RTMP_ClientPacket
+				par librtmp::HandleInvoke
+					Responder-&gt;&gt;Initiator: Command(_result(connect))
+					Initiator-&gt;&gt;Responder: Command(ReleaseStream)
+					Initiator-&gt;&gt;Responder: Command(FCPublish)
+					Initiator-&gt;&gt;Responder: Command(CreateStream)
+				and
+					Responder-&gt;&gt;Initiator: Command(_result(CreateStream))
+					Initiator-&gt;&gt;Responder: Command(publish)
+					Responder-&gt;&gt;Initiator: Command(_result(publish))
+				end
+			end
+		end
+	end
+	alt librtmp::init_send
+		alt librtmp::send_meta_data
+			Initiator-&gt;&gt;Responder: Data(Metadata)
+		end
+	end
+	par
+		loop librtmp::send_thread
+		    alt librtmp::send_headers
+			    Initiator-&gt;&gt;Responder: Data
+            end
+            alt librtmp::send_packet
+                Note over Initiator: circlebuf_pop_front()
+                Note over Initiator: FLV data(RTMP use FLV&#39;s Audio, Video, and Data(AMF0))
+                Initiator-&gt;&gt;Responder: Audio
+                Initiator-&gt;&gt;Responder: Video
+                Initiator-&gt;&gt;Responder: Data
+            end
+		end
+	and
+		loop librtmp::rtmp_stream_data
+			alt librtmp::add_video_packet
+				Note over Initiator: Drop frames
+				alt librtmp::add_packet
+          Note over Initiator: circlebuf_push_back()
+				end
+			end
+		end
+	end
+</code></pre><p><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/librtmp/rtmp.c#L3140-L3181>Command(_result(connect))</a></p><p><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/librtmp/rtmp.c#L3182-L3198>Command(CreateStream)</a></p><p><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L923-L927>send_meta_data</a></p><p><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L611-L661>send_packet</a></p><p><a href=https://github.com/obsproject/obs-studio/blob/af6844f5c24d77ca7b4b1bcc000504d8e693a563/plugins/obs-outputs/rtmp-stream.c#L1225-L1231>circlebuf_push_back</a></p><h5 id=responder>Responder</h5><h5 id=digest-handshake>Digest Handshake</h5><h3 id=protocol-control>Protocol Control</h3><h3 id=streams>Streams</h3><h1 id=references>References</h1><ul>
+<li><a href=https://www.adobe.com/content/dam/acom/en/devnet/rtmp/pdf/rtmp_specification_1.0.pdf>RTMP 1.0 Specification</a></li><li><a href=http://lkcl.net/rtmp/RTMPE.txt>rtmpdump&rsquo;s RTMPE document</a></li><li><a href=https://www.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10_1.pdf>FLV 10.1 Specification</a></li></ul><h1 id=appendix_a>Appendix A: RTMPE </h1><p>Summary of <a href=http://lkcl.net/rtmp/RTMPE.txt>rtmpdump&rsquo;s implementation</a>.</p><h2 id=definitions>Definitions</h2><p>digest: <a href=https://datatracker.ietf.org/doc/html/rfc4634>HMAC-SHA256</a></p><p>key: Public key by <a href=https://datatracker.ietf.org/doc/html/rfc2631>Diffie-Hellman key exchange</a></p><h2 id=constants>Constants</h2><h3 id=genuine_fms_const>GenuineFMSConst =</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 16)
+(draw-column-headers)
+(draw-box &#34;G&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;u&#34; {:span 1})
+(draw-box &#34;i&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;A&#34; {:span 1})
+(draw-box &#34;d&#34; {:span 1})
+(draw-box &#34;o&#34; {:span 1})
+(draw-box &#34;b&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;F&#34; {:span 1})
+(draw-box &#34;l&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34;s&#34; {:span 1})
+(draw-box &#34;h&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;M&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;d&#34; {:span 1})
+(draw-box &#34;i&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;S&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;r&#34; {:span 1})
+(draw-box &#34;v&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;r&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;1&#34; {:span 1})
+</code></pre><h3 id=genuine_fp_const>GenuineFPConst =</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 16)
+(draw-column-headers)
+(draw-box &#34;G&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;u&#34; {:span 1})
+(draw-box &#34;i&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;A&#34; {:span 1})
+(draw-box &#34;d&#34; {:span 1})
+(draw-box &#34;o&#34; {:span 1})
+(draw-box &#34;b&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;F&#34; {:span 1})
+(draw-box &#34;l&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34;s&#34; {:span 1})
+(draw-box &#34;h&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;P&#34; {:span 1})
+(draw-box &#34;l&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34;y&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;r&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;1&#34; {:span 1})
+</code></pre><h3 id=random_crud>RandomCrud =</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 16)
+(draw-column-headers)
+(draw-box 0xf0 {:span 1})
+(draw-box 0xee {:span 1})
+(draw-box 0xc2 {:span 1})
+(draw-box 0x4a {:span 1})
+(draw-box 0x80 {:span 1})
+(draw-box 0x68 {:span 1})
+(draw-box 0xbe {:span 1})
+(draw-box 0xe8 {:span 1})
+(draw-box 0x2e {:span 1})
+(draw-box 0x00 {:span 1})
+(draw-box 0xd0 {:span 1})
+(draw-box 0xd1 {:span 1})
+(draw-box 0x02 {:span 1})
+(draw-box 0x9e {:span 1})
+(draw-box 0x7e {:span 1})
+(draw-box 0x57 {:span 1})
+(draw-box 0x6e {:span 1})
+(draw-box 0xec {:span 1})
+(draw-box 0x5d {:span 1})
+(draw-box 0x2d {:span 1})
+(draw-box 0x29 {:span 1})
+(draw-box 0x80 {:span 1})
+(draw-box 0x6f {:span 1})
+(draw-box 0xab {:span 1})
+(draw-box 0x93 {:span 1})
+(draw-box 0xb8 {:span 1})
+(draw-box 0xe6 {:span 1})
+(draw-box 0x36 {:span 1})
+(draw-box 0xcf {:span 1})
+(draw-box 0xeb {:span 1})
+(draw-box 0x31 {:span 1})
+(draw-box 0xae {:span 1})
+</code></pre><h3 id=genuinefmsconstcrud--genuinefmsconstgenuine_fms_const--randomcrudrandom_crud->GenuineFMSConstCrud = <a href=#genuine_fms_const>GenuineFMSConst</a> + <a href=#random_crud>RandomCrud</a> =</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 16)
+(draw-column-headers)
+(draw-box &#34;G&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;u&#34; {:span 1})
+(draw-box &#34;i&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;A&#34; {:span 1})
+(draw-box &#34;d&#34; {:span 1})
+(draw-box &#34;o&#34; {:span 1})
+(draw-box &#34;b&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;F&#34; {:span 1})
+(draw-box &#34;l&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34;s&#34; {:span 1})
+(draw-box &#34;h&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;M&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;d&#34; {:span 1})
+(draw-box &#34;i&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;S&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;r&#34; {:span 1})
+(draw-box &#34;v&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;r&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;1&#34; {:span 1})
+(draw-box 0xf0 {:span 1})
+(draw-box 0xee {:span 1})
+(draw-box 0xc2 {:span 1})
+(draw-box 0x4a {:span 1})
+(draw-box 0x80 {:span 1})
+(draw-box 0x68 {:span 1})
+(draw-box 0xbe {:span 1})
+(draw-box 0xe8 {:span 1})
+(draw-box 0x2e {:span 1})
+(draw-box 0x00 {:span 1})
+(draw-box 0xd0 {:span 1})
+(draw-box 0xd1 {:span 1})
+(draw-box 0x02 {:span 1})
+(draw-box 0x9e {:span 1})
+(draw-box 0x7e {:span 1})
+(draw-box 0x57 {:span 1})
+(draw-box 0x6e {:span 1})
+(draw-box 0xec {:span 1})
+(draw-box 0x5d {:span 1})
+(draw-box 0x2d {:span 1})
+(draw-box 0x29 {:span 1})
+(draw-box 0x80 {:span 1})
+(draw-box 0x6f {:span 1})
+(draw-box 0xab {:span 1})
+(draw-box 0x93 {:span 1})
+(draw-box 0xb8 {:span 1})
+(draw-box 0xe6 {:span 1})
+(draw-box 0x36 {:span 1})
+(draw-box 0xcf {:span 1})
+(draw-box 0xeb {:span 1})
+(draw-box 0x31 {:span 1})
+(draw-box 0xae {:span 1})
+</code></pre><h3 id=genuinefpconstcrud--genuinefpconstgenuine_fp_const--randomcrudrandom_crud->GenuineFPConstCrud = <a href=#genuine_fp_const>GenuineFPConst</a> + <a href=#random_crud>RandomCrud</a> =</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 16)
+(draw-column-headers)
+(draw-box &#34;G&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;u&#34; {:span 1})
+(draw-box &#34;i&#34; {:span 1})
+(draw-box &#34;n&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;A&#34; {:span 1})
+(draw-box &#34;d&#34; {:span 1})
+(draw-box &#34;o&#34; {:span 1})
+(draw-box &#34;b&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;F&#34; {:span 1})
+(draw-box &#34;l&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34;s&#34; {:span 1})
+(draw-box &#34;h&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;P&#34; {:span 1})
+(draw-box &#34;l&#34; {:span 1})
+(draw-box &#34;a&#34; {:span 1})
+(draw-box &#34;y&#34; {:span 1})
+(draw-box &#34;e&#34; {:span 1})
+(draw-box &#34;r&#34; {:span 1})
+(draw-box &#34; &#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;0&#34; {:span 1})
+(draw-box &#34;1&#34; {:span 1})
+(draw-box 0xf0 {:span 1})
+(draw-box 0xee {:span 1})
+(draw-box 0xc2 {:span 1})
+(draw-box 0x4a {:span 1})
+(draw-box 0x80 {:span 1})
+(draw-box 0x68 {:span 1})
+(draw-box 0xbe {:span 1})
+(draw-box 0xe8 {:span 1})
+(draw-box 0x2e {:span 1})
+(draw-box 0x00 {:span 1})
+(draw-box 0xd0 {:span 1})
+(draw-box 0xd1 {:span 1})
+(draw-box 0x02 {:span 1})
+(draw-box 0x9e {:span 1})
+(draw-box 0x7e {:span 1})
+(draw-box 0x57 {:span 1})
+(draw-box 0x6e {:span 1})
+(draw-box 0xec {:span 1})
+(draw-box 0x5d {:span 1})
+(draw-box 0x2d {:span 1})
+(draw-box 0x29 {:span 1})
+(draw-box 0x80 {:span 1})
+(draw-box 0x6f {:span 1})
+(draw-box 0xab {:span 1})
+(draw-box 0x93 {:span 1})
+(draw-box 0xb8 {:span 1})
+(draw-box 0xe6 {:span 1})
+(draw-box 0x36 {:span 1})
+(draw-box 0xcf {:span 1})
+(draw-box 0xeb {:span 1})
+(draw-box 0x31 {:span 1})
+(draw-box 0xae {:span 1})
+</code></pre><h2 id=methods>Methods</h2><h3 id=calculate-responder-key-offset>Calculate Responder Key Offset</h3><pre tabindex=0><code>(offset) =&gt; mod(offset, 632) + 8
+</code></pre><h3 id=calculate-responder-digest-offset>Calculate Responder Digest Offset</h3><pre tabindex=0><code>(offset) =&gt; mod(offset, 728) + 776
+</code></pre><h3 id=calculate-initiator-key-offset>Calculate Initiator Key Offset</h3><pre tabindex=0><code>(offset) =&gt; mod(offset, 632) + 772
+</code></pre><h3 id=calculate-initiator-digest-offset>Calculate Initiator Digest Offset</h3><pre tabindex=0><code>(offset) =&gt; mod(offset, 728) + 12
+</code></pre><h2 id=payload-format>Payload format</h2><h3 id=format-1>Format 1</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def row-header-fn {})
+(def boxes-per-row 14)
+(draw-box &#34;digest offset&#34; {:span 4})
+(draw-gap &#34;random ((calculated digest offset) bytes)&#34;)
+(draw-gap &#34;digest (32 bytes)&#34;)
+(draw-gap &#34;random (760-(calculated digest offset)-(length of digest) bytes)&#34;)
+(draw-gap &#34;random ((calculated key offset) bytes)&#34;)
+(draw-gap &#34;key (128 bytes)&#34;)
+(draw-gap &#34;random (760-(calculated key offset)-(length of key) bytes)&#34;)
+(draw-box &#34;key offset&#34; {:span 4})
+(draw-bottom)
+</code></pre><h3 id=format-2>Format 2</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def row-header-fn {})
+(def boxes-per-row 14)
+(draw-gap &#34;random ((calculated key offset) bytes)&#34;)
+(draw-gap &#34;key (128 bytes)&#34;)
+(draw-gap &#34;random (760-(calculated key offset)-(length of key) bytes)&#34;)
+(draw-box &#34;key offset&#34; {:span 4})
+(draw-box &#34;digest offset&#34; {:span 4})
+(draw-gap &#34;random ((calculated digest offset) bytes)&#34;)
+(draw-gap &#34;digest (32 bytes)&#34;)
+(draw-gap &#34;random (760-(calculated digest offset)-(length of digest) bytes)&#34;)
+(draw-bottom)
+</code></pre><h2 id=redefine>Redefine</h2><h3 id=encrypted-version-recho-from-responder-reecho>Encrypted version REcho from Responder (REEcho)</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &#34;time&#34; {:span 4})
+(draw-box &#34;version&#34; {:span 4})
+(draw-gap &#34;payload (1528 bytes)&#34;)
+(draw-box &#34;signature&#34; {:span 4})
+(draw-bottom)
+</code></pre><p>signature is calculated as</p><pre tabindex=0><code>digest = HMACsha256(DHPublicKeyC, GenuineFMSConstCrud)
+signature = HMACsha256(REcho[:-4], digest)
+</code></pre><h3 id=encrypted-version-iecho-from-initiator-ieecho>Encrypted version IEcho from Initiator (IEEcho)</h3><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 8)
+(draw-column-headers)
+(draw-box &#34;time&#34; {:span 4})
+(draw-box &#34;version&#34; {:span 4})
+(draw-gap &#34;payload (1528 bytes)&#34;)
+(draw-box &#34;signature&#34; {:span 4})
+(draw-bottom)
+</code></pre><p>signature is calculated as</p><pre tabindex=0><code>digest = HMACsha256(DHPublicKeyS, GenuineFPConstCrud)
+signature = HMACsha256(IEcho[:-4], digest)
+</code></pre><h2 id=flow>Flow</h2><h3 id=ihello>IHello</h3><ol>
+<li>Generate random bytes payload.</li><li>Generate 128-bit DH key.</li><li>Write DH public key in calulate key offset with Payload format.</li><li>Calculate digest offset with Payload format.</li><li>Calculate HMAC-SHA256 from HHello message except digest 32 bytes with <a href=#genuine_fp_const>GenuineFPConst</a>.</li><li>Write digest and send to the responder.</li></ol><h3 id=rhello>RHello</h3><ol>
+<li>Generate random bytes payload.</li><li>Generate 128-bit DH key.</li><li>Write DH public key in calulate key offset with Payload format.</li><li>Calculate digest offset with Payload format.</li><li>Calculate HMAC-SHA256 from HHello message except digest 32 bytes with <a href=#genuine_fms_const>GenuineFMSConst</a>.</li><li>Write digest and send to the initiator.</li></ol><h3 id=determine-payload-format>Determine payload format</h3><ol>
+<li>Get digest offset according to payload format. (need check both)</li><li>Calculate HMAC-SHA256 from received HHello message except digest 32 bytes with GenuineConst(Use opposite side&rsquo;s Const; Initiator: <a href=#genuine_fms_const>GenuineFMSConst</a>, Responder: <a href=#genuine_fp_const>GenuineFPConst</a>).</li><li>Compare calculated and received HMAC-SHA256.
+<ol>
+<li>if match, Read public key from payload.</li><li>else (dismatch), retry with the other one. or fail key exchange.</li></ol></li></ol><h3 id=compute-diffie-hellmann-shared-secret>Compute Diffie-Hellmann Shared Secret</h3><pre tabindex=0><code>DHSharedSecret = DH(DHPrivateKey, DHPublicKey_received)
+</code></pre><p>DHPrivateKey: A private key that generated at HHello.
+DHPublicKey_received: A public key that received by HHello.</p><h3 id=compute-swfverification-token>Compute SWFVerification token</h3><p>I don&rsquo;t understand well. here is copy from <a href=http://lkcl.net/rtmp/RTMPE.txt>rtmpdump&rsquo;s RTMPE document</a></p><blockquote>
+<p>If a SWFHash is used, a SWFVerification response will need to be calculated, and returned on-demand to a &ldquo;ping&rdquo; request.
+SWFsize is the size of the SWF file.</p></blockquote><blockquote>
+<p>Note: It is assumed that the reader is familiar enough with RTMP to know what a &ldquo;ping&rdquo; is. Where the ordinary ping type is 0x0006, and the pong response is of type 0x0007, an SWF verification ping is of type 0x001a and the SWF verification pong is of type 0x001b.
+Packet sizes of type 0x001b are 44 bytes: 2 bytes for the type itself and 42 bytes for the SWF verification response.</p></blockquote><pre tabindex=0><code>SWFVerifySig = { 0x1, 0x1 };
+swfvk = payload[:-4];
+SWFDigest = SWFVerifySig + bigendian32(SWFsize) + bigendian32(SWFsize) + HMACsha256(SWFHash, swfvk);
+</code></pre><h3 id=initialise-arc4-send--receive-keys>Initialise ARC4 Send / Receive Keys</h3><pre tabindex=0><code>KeyInbound  = ARC4Key(HMACsha256(DHPublicKey_received, DHSharedSecret)[0:15])
+KeyOutbound = ARC4Key(HMACsha256(DHPublicKey, DHSharedSecret)[0:15])
+</code></pre><h3 id=recho-validation>REcho: Validation</h3><p>If success Diffie-Hellmann Key Exchange</p><ul>
+<li>Send REEcho with computed signature.
+else</li><li>simply send a copy.</li></ul><h3 id=iecho-validation>IEcho: Validation</h3><p>If success Diffie-Hellmann Key Exchange</p><ul>
+<li>Vertificate received REEcho&rsquo;s signature</li><li>Send IEEcho with computed signature.
+else</li><li>simply send a copy.</li></ul></div><div class=post-footer>
+<div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mjlee.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div></article></main></body></html>

@@ -50,10 +50,7 @@ Mar 28, 2022
 It occured due to hard-coded frequency index in ADTS writer.</p><p>In RTMP protocol, Sampling Frequency Index was passing by AudioSpecificConfig.
 But, It fixed <code>0x1</code> in my tcpdump on OBS and ffmpeg.</p><p>So, I don&rsquo;t care about it and just hard-coding for ADTS writer for matching output.</p><h1 id=how>How</h1><p>List of Frequency related packets from RTMP is below.</p><ul>
 <li>Data message that named <code>@setDataFrame onMetaData</code></li><li>RTMP Audio message&rsquo;s control</li><li>AAC AudioSpecificConfig</li></ul><p>But, last two way&rsquo;s are unavailable. due to following reason.</p><ul>
-<li>RTMP Audio message&rsquo;s control&rsquo;s frequency related variable is always 3 on AAC.</li><li>AAC AudioSpecificConfig packet is always 0x1 on my whole observation.</li></ul><p>So, Correct way is only consider <code>@setDataFrame onMetaData</code>&rsquo;s metadata.</p><h1 id=new-issues>New issues</h1><ul>
-<li>Audio Sync problem
-<ul>
-<li>Maybe related to dts processing.</li><li>Current duration is fixed 1024/samplerate seconds</li><li>ADTS has no problem</li></ul></li></ul><h1 id=discussions>Discussions</h1><ul>
+<li>RTMP Audio message&rsquo;s control&rsquo;s frequency related variable is always 3 on AAC.</li><li>AAC AudioSpecificConfig packet is always 0x1 on my whole observation.</li></ul><p>So, Correct solution is only consider <code>@setDataFrame onMetaData</code>&rsquo;s metadata.</p><h1 id=discussions>Discussions</h1><ul>
 <li>Split video/audio track in HLS playlist?
 <ul>
 <li>Passing audio ADTS directly</li><li>Need to check about synchronous related features</li></ul></li></ul></div><div class=post-footer>
