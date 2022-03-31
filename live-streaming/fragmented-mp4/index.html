@@ -1,0 +1,84 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>Fragmented MP4 // Min-Jae Lee</title><link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.93.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.4a7ec8660f9a44b08c4da97c5f2e31b1192df1d4d0322e65c0dbbc6ecb1b863f.css>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8E53QTVV68"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-8E53QTVV68",{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Fragmented MP4">
+<meta name=twitter:description content="What is Fragmented MP4 MP4 is defined in ISOBMFF.
+Mandatory, minimum ISOBMFF is a set of ftyp, mdat, moov.
+  (def boxes-per-row 4) (draw-column-headers) (draw-box &#34;ftyp&#34; {:span 4}) (draw-gap &#34;mdat&#34;) (draw-box &#34;moov&#34; {:span 4})  ftyp has compatible information. mdat has real media data. moov has metadata and sample information such as data offset, size and other information that required for decode.  The point of Fragmented is sample information.">
+<meta property="og:title" content="Fragmented MP4">
+<meta property="og:description" content="What is Fragmented MP4 MP4 is defined in ISOBMFF.
+Mandatory, minimum ISOBMFF is a set of ftyp, mdat, moov.
+  (def boxes-per-row 4) (draw-column-headers) (draw-box &#34;ftyp&#34; {:span 4}) (draw-gap &#34;mdat&#34;) (draw-box &#34;moov&#34; {:span 4})  ftyp has compatible information. mdat has real media data. moov has metadata and sample information such as data offset, size and other information that required for decode.  The point of Fragmented is sample information.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/fragmented-mp4/"><meta property="article:section" content="live-streaming">
+<meta property="article:published_time" content="2022-04-01T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-04-01T00:00:00+00:00">
+</head><body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1><nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+-
+<a class=app-header-menu-item href=/tags/>Tags</a>
+</nav><p>Software Engineer</p><div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
+</div></header><main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Fragmented MP4</h1><div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Apr 1, 2022
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+2 min read
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+<a class=tag href=https://blog.mjlee.ga/tags/development/>Development</a>
+<a class=tag href=https://blog.mjlee.ga/tags/live-streaming/>Live-Streaming</a>
+<a class=tag href=https://blog.mjlee.ga/tags/fragmented-mp4/>Fragmented-MP4</a>
+<a class=tag href=https://blog.mjlee.ga/tags/fmp4/>fmp4</a>
+<a class=tag href=https://blog.mjlee.ga/tags/isobmff/>ISOBMFF</a>
+</div></div></header><div class=post-content>
+<h1 id=what-is-fragmented-mp4>What is Fragmented MP4</h1><p>MP4 is defined in ISOBMFF.</p><p>Mandatory, minimum ISOBMFF is a set of <code>ftyp</code>, <code>mdat</code>, <code>moov</code>.</p><link rel=stylesheet href=/diagram.css>
+<script src=https://cdn.jsdelivr.net/gh/LMinJae/bytefield-svg-browser-wrapper/dist/bundle.js></script>
+<script src=/bytefield.js></script>
+<pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def boxes-per-row 4)
+(draw-column-headers)
+(draw-box &#34;ftyp&#34; {:span 4})
+(draw-gap &#34;mdat&#34;)
+(draw-box &#34;moov&#34; {:span 4})
+</code></pre><ul>
+<li><code>ftyp</code> has compatible information.</li><li><code>mdat</code> has real media data.</li><li><code>moov</code> has metadata and sample information such as data offset, size and other information that required for decode.</li></ul><p>The point of Fragmented is sample information.</p><p>In fragmented mp4, moov don&rsquo;t have any sample information.</p><p>Sample information is stored in <code>moof</code> box.</p><h1 id=structure-of-fragmented-mp4>Structure of Fragmented MP4</h1><p>Fragmented MP4&rsquo;s recommandations is below.</p><ul>
+<li>SHOULD in following order
+<ul>
+<li><code>ftyp</code></li><li><code>moov</code></li><li>pair of <code>moof</code> and <code>mdat</code></li><li><code>mfra</code> (optional)</li></ul></li><li><code>moof</code> at most one <code>traf</code></li><li><code>mfra</code> is recording first (random accessible) samples for both video and audio</li></ul><pre tabindex=0><code class=language-bytefield data-lang=bytefield>(def row-header-fn {})
+(def boxes-per-row 4)
+(draw-box &#34;ftyp&#34; {:span 4})
+(draw-box &#34;moov&#34; {:span 4})
+(draw-box &#34;moof&#34; {:span 4})
+(draw-gap &#34;mdat&#34;)
+(draw-gap &#34;...&#34;)
+</code></pre><p>Commonly, a set of <code>ftyp</code> and <code>moov</code> is calling as initial segment.
+<code>moov</code> only has metadata that used for decode media without sample information.
+commonly call it as empty moov.</p><p>sample information is packaging into <code>moof</code>.</p><p>Commonly, a set of <code>moof</code> and <code>mdat</code> is calling as chunk segment.</p><p>Typically, each chunk segment has at least one GoP(Group of Pictures; you can simply think it as one Keyframe + interframes).
+So, this is bottleneck point in live streaming.</p><p>If keyframe interval is 2 seconds, then chunk segment&rsquo;s duration is 2 seconds.
+Due to <code>moof</code> box is base offset of data(that configured by <code>default_base_is_moof</code> flag in <code>tfhd</code>), and <code>moof</code> have sample information. cannot write before flushing to create next chunk.
+So, Latency is always 2+@ seconds (In producer)Encoding + (In server)Receive 2 seconds GoP + Write to player + (In customer) Decoding).</p><p>In, Low-Latency HLS or Low-Latency DASH split GoP into small pieces.</p><p>For example, keyframe interval is 2 seconds, then chunk segment&rsquo;s duration is 2 seconds.
+Server can split GoP into 4 chunks with 500ms duration.
+then, Latency is always 0.5+@ seconds (In producer)Encoding + (In server)Receive 0.5 seconds + Write to player + (In customer) Decoding).</p><p>Latency is reduced at least 1.5 seconds.
+But, you need to check <code>moof</code> overhead.
+Smaller chunk archive low latency, but require more network traffic and storage.</p><h1 id=reference>Reference</h1><ul>
+<li><a href=https://www.iso.org/standard/83102.html>ISO/IEC 14496-12: ISO base media file format</a></li><li><a href=https://bitmovin.com/fun-with-container-formats-2/>Fun with Container Formats – Part 2</a></li><li><a href=https://ottball.com/low-latency-ll-hls-ll-dash/>Low Latency, LL-HLS, LL-DASH</a></li></ul></div><div class=post-footer>
+<div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mjlee.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div></article></main></body></html>
