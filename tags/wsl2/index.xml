@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WSL2 on Min-Jae Lee</title><link>https://blog.mjlee.ga/tags/wsl2/</link><description>Recent content in WSL2 on Min-Jae Lee</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 21 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.mjlee.ga/tags/wsl2/index.xml" rel="self" type="application/rss+xml"/><item><title>Podman under WSL - Fix journal related errors on WSL2/Debian</title><link>https://blog.mjlee.ga/wsl/podman/journald_problem/</link><pubDate>Sat, 21 May 2022 00:00:00 +0000</pubDate><guid>https://blog.mjlee.ga/wsl/podman/journald_problem/</guid><description>TL;DR If you receive error like write unixgram @00017-&amp;gt;/run/systemd/journal/socket: sendmsg: no such file or directory. Then, Edit /usr/share/containers/containers.conf with below lines.
+log_driver = &amp;quot;k8s-file&amp;quot;
+cgroup_manager = &amp;quot;cgroupfs&amp;quot;
+event_logger = &amp;quot;file&amp;quot;
+Introduction If you install podman on WSL, than you may receive below or similar error when you try to run podman commands
+&amp;ldquo;write unixgram @00017-&amp;gt;/run/systemd/journal/socket: sendmsg: no such file or directory&amp;rdquo;
+It is because Podman&amp;rsquo;s default configuration is use journald as event_logger.</description></item></channel></rss>

@@ -1,0 +1,91 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>Thought about latency // Min-Jae Lee</title><link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.93.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="Min-Jae Lee">
+<meta name=description content>
+<link rel=stylesheet href=https://blog.mjlee.ga/css/main.min.4a7ec8660f9a44b08c4da97c5f2e31b1192df1d4d0322e65c0dbbc6ecb1b863f.css>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8E53QTVV68"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-8E53QTVV68",{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Thought about latency">
+<meta name=twitter:description content="Problem  Current design was RTMP for Ingest, fMP4 for remain RTMP and MPEG-TS are passing frame by frame fMP4 is passing GoP(Group of Pictures) by GoP So, Additional delay(key-frame interval) occured on each reconstruction of media container If key-frame interval is 2 seconds  Streamer to viewer delay will be like below  Capture frame $\frac{1}{FPS}\text{sec.}$ Encoding delay Network delay Waiting for GoP $2\text{sec.}$ Passing into transcoder Waiting for GoP $2\text{sec.">
+<meta property="og:title" content="Thought about latency">
+<meta property="og:description" content="Problem  Current design was RTMP for Ingest, fMP4 for remain RTMP and MPEG-TS are passing frame by frame fMP4 is passing GoP(Group of Pictures) by GoP So, Additional delay(key-frame interval) occured on each reconstruction of media container If key-frame interval is 2 seconds  Streamer to viewer delay will be like below  Capture frame $\frac{1}{FPS}\text{sec.}$ Encoding delay Network delay Waiting for GoP $2\text{sec.}$ Passing into transcoder Waiting for GoP $2\text{sec.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.mjlee.ga/live-streaming/20220521-thought-about-letency/"><meta property="article:section" content="live-streaming">
+<meta property="article:published_time" content="2022-05-21T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-05-21T00:00:00+00:00">
+</head><body>
+<header class=app-header>
+<a href=https://blog.mjlee.ga/><img class=app-header-avatar src=/avatar.jpg alt="Min-Jae Lee"></a>
+<h1>Min-Jae Lee</h1><nav class=app-header-menu>
+<a class=app-header-menu-item href=/>Home</a>
+-
+<a class=app-header-menu-item href=/tags/>Tags</a>
+</nav><p>Software Engineer</p><div class=app-header-social>
+<a href=https://github.com/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github"><title>My Github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a>
+<a href=https://linkedin.com/in/lminjae target=_blank rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-linkedin"><title>My LinkedIn</title><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+</a>
+</div></header><main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Thought about latency</h1><div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+May 21, 2022
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+3 min read
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+<a class=tag href=https://blog.mjlee.ga/tags/development/>Development</a>
+<a class=tag href=https://blog.mjlee.ga/tags/live-streaming/>Live-Streaming</a>
+<a class=tag href=https://blog.mjlee.ga/tags/fragmented-mp4/>Fragmented-MP4</a>
+<a class=tag href=https://blog.mjlee.ga/tags/fmp4/>fmp4</a>
+<a class=tag href=https://blog.mjlee.ga/tags/isobmff/>ISOBMFF</a>
+</div></div></header><div class=post-content>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css integrity=sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js integrity=sha384-VQ8d8WVFw0yHhCk5E8I86oOhv48xLpnDZx5T9GogA/Y84DcCKWXDmSDfn13bzFZY crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous></script>
+<script src=/katex.js></script>
+<h1 id=problem>Problem</h1><ul>
+<li>Current design was RTMP for Ingest, fMP4 for remain</li><li>RTMP and MPEG-TS are passing frame by frame</li><li>fMP4 is passing GoP(Group of Pictures) by GoP</li><li>So, Additional delay(key-frame interval) occured on each reconstruction of media container</li><li>If key-frame interval is 2 seconds
+<ul>
+<li>Streamer to viewer delay will be like below
+<ul>
+<li>Capture frame $\frac{1}{FPS}\text{sec.}$</li><li>Encoding delay</li><li>Network delay</li><li><strong>Waiting for GoP</strong> $2\text{sec.}$</li><li>Passing into transcoder</li><li><strong>Waiting for GoP</strong> $2\text{sec.}$</li><li>Passing into viewer</li><li>So, Total delay should be more than $4 + \frac{1}{FPS} \text{sec.}$</li></ul></li></ul></li><li>So, Major services like Youtube Live or Twitch said (Real-time) low latency setting can archive 2~5 sec. delay.</li></ul><h1 id=self-evident-delay-on-live-streaming>Self-evident delay on live streaming</h1><ol>
+<li>Capture frame</li><li>Encoding</li><li>Network latency</li><li>Transcoding</li><li>Packing media container</li><li>Edge deploy</li><li>Network latency</li><li>Reconstruct media container into viewer&rsquo;s environment</li><li>Decoding</li><li>Play</li></ol><h1 id=figure-out-optimizable-points>Figure out optimizable points</h1><ul>
+<li>Reduce elapsed time between 1 to 10 is important.</li><li>Network delay on 3, 7 cannot control.</li><li>1 is fixed. $\frac{1}{FPS}\text{sec.}$</li><li>2 is related streamer&rsquo;s HW spec. Cannot control.</li><li>4 is Ingest to Transcoder delay and Encoding delay</li><li>5 is related specification, overhead and compatibility</li><li>6 Delay at copy into CDN(passing media container into content delievery server)</li><li>8~10 is related End User&rsquo;s device and experience.
+<ul>
+<li>Nobody like hot device and higher RPM fan noise.</li></ul></li></ul><hr>
+<p>I think optimizable point is two.</p><ul>
+<li>Ingest to Transcoder</li><li>Ingest(and Transcoder) to Edge deploy</li></ul><h2 id=at-ingest-to-transcoder>At Ingest to Transcoder</h2><ul>
+<li>
+<p>Best performance is allocate One-by-One within same processor(reduce I/O delay)</p></li><li>
+<p>But, Increase cost (Ingest hold many connection in same time)</p></li><li>
+<p>Passing each GoP immediately when determine it&rsquo;s keyframe</p><ul>
+<li>Current RTMP code, cannot access until all payload receive.</li><li>So, need to implement previewable stage or signalling method that can access RTMP message header + 1 byte(Video data&rsquo;s contol byte)</li></ul></li><li>
+<p>So, Pooling Transcoders and queuing GoPs.</p><ul>
+<li>For example, 1 instance of Ingest can handle maximum 1000 connection</li><li>Transcoder pool instance that can handle less than Ingest connection(like 100? maybe more less, due to memory requirement) at once</li><li>If Ingest receive keyframe, request transcoder from pool
+<ul>
+<li>and than, each GoP is done, free transcoder</li></ul></li><li>If connected transcoder pool reach threshold, connect addtional Transcoder pool instance</li></ul></li></ul><h2 id=at-ingestand-transcoder-to-edge-deploy>At Ingest(and Transcoder) to Edge deploy</h2><ul>
+<li>
+<p>fMP4&rsquo;s demerit on live streaming is each block has length and require data base offset(this is reason fMP4 require following order moof, mdat; <code>default-base-is-moof</code> flag).</p></li><li>
+<p>So, Cannot send until Build GoP completely.</p></li><li>
+<p>For archive lowest latency, maybe need to use MPEG2-TS.</p><ul>
+<li>due to it can passing frame-by-frame.</li><li>Cons. and Unknown
+<ul>
+<li>At browser, most of library transmuxing into fMP4. so this isn&rsquo;t merit. If anything, require more cost.(increase network outbound, due to overhead(about 10%))</li><li>At mobile, iOS and Android support MPEG2-TS natively. If media player support decoding before ready full GoP. maybe can archive better than fMP4.</li></ul></li><li>Pros.
+<ul>
+<li>If transcoder following H.264 baseline profile for WebRTC.
+<ul>
+<li>Edge deploy can passing each frame over SRTP under WebRTC</li></ul></li><li>Just consider Live-streaming performance. it seems can archive less latency.
+<ul>
+<li>But, Require development and maintance cost
+<ul>
+<li>At browser, need to handle fMP4 over HLS and WebRTC track.</li><li>At backend, need to managing both of HLS manifest generator and WebRTC-related.</li></ul></li></ul></li></ul></li></ul></li></ul><h1 id=references>References</h1><ul>
+<li><a href=https://bitmovin.com/halve-encoding-packaging-storage-costs-hls-fragmented-mp4/>Halve your Encoding, Packaging and Storage Costs – HLS with fragmented MP4 | BITMOVIN</a></li></ul></div><div class=post-footer>
+<div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mjlee.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div></article></main></body></html>
